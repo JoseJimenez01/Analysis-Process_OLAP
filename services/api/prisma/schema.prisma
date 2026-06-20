@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  customer
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  role         UserRole
+  createdAt    DateTime      @default(now()) @map("created_at")
+  reservations Reservation[]
+}
+
+model Restaurant {
+  id           String        @id @default(cuid())
+  name         String
+  address      String
+  phone        String
+  description  String
+  rating       Float         @default(0)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  menus        Menu[]
+  reservations Reservation[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String
+  icon        String
+  products    Product[]
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  description String
+  price       Decimal       @db.Decimal(10, 2)
+  imageUrl    String        @map("image_url")
+  available   Boolean       @default(true)
+  categoryId  String        @map("category_id")
+  category    Category      @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime      @default(now()) @map("created_at")
+  menuItems   MenuProduct[]
+}
+
+model Menu {
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  active       Boolean       @default(true)
+  restaurantId String        @map("restaurant_id")
+  restaurant   Restaurant    @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime      @default(now()) @map("created_at")
+  products     MenuProduct[]
+}
+
+model MenuProduct {
+  id           String   @id @default(cuid())
+  menuId       String   @map("menu_id")
+  productId    String   @map("product_id")
+  displayOrder Int      @default(0) @map("display_order")
+  menu         Menu     @relation(fields: [menuId], references: [id])
+  product      Product  @relation(fields: [productId], references: [id])
+
+  @@unique([menuId, productId])
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  userId          String            @map("user_id")
+  restaurantId    String            @map("restaurant_id")
+  reservationDate DateTime          @map("reservation_date")
+  partySize       Int               @map("party_size")
+  status          ReservationStatus @default(pending)
+  specialRequests String?           @map("special_requests")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  user            User              @relation(fields: [userId], references: [id])
+  restaurant      Restaurant        @relation(fields: [restaurantId], references: [id])
+}

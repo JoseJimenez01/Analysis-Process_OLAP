@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restaurantes-config
+  namespace: restaurantes
+data:
+  NODE_ENV: "production"
+  DB_ENGINE: "postgres"
+  API_PORT: "3000"
+  SEARCH_PORT: "4000"

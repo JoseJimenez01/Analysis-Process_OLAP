@@ -1,0 +1,34 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build and coverage artifacts
+coverage
+**/coverage
+.nyc_output
+dist
+build
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# VCS and editor
+.git
+.gitignore
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files (do not bake secrets)
+.env
+.env.*
+
+# Local docs and binaries not needed in container image
+_BD2_PY01_Restaurantes.pdf

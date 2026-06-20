@@ -1,0 +1,74 @@
+# PDFs
+_BD2_PY01_Restaurantes.pdf
+
+# Dev-Markdowns
+Plan.md
+Especification.md
+backen_design.md
+actual_status.md
+.github/LOCAL_TESTING.md
+.github/PIPELINE.md
+ARCHITECTURE.md
+auditoria_y_plan.md
+docs/GUIA_DESPLIEGUE.md
+
+# assets
+assets/
+
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Runtime
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency caches
+.npm/
+.pnpm-store/
+.yarn/
+
+# Tooling caches
+.cache/
+.eslintcache
+.nyc_output/
+
+# Env files
+.env
+.env.*
+
+# Local overrides
+*.local
+
+# Coverage and build
+coverage/
+**/coverage/
+dist/
+build/
+tmp/
+temp/
+
+# Prisma / DB local files
+*.db
+*.db-journal
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Test reports
+junit.xml
+test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,327 @@
+services:
+  # ===== PostgreSQL =====
+  postgres:
+    image: postgres:16
+    container_name: py01_postgres
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ===== MongoDB Config Servers (Replica Set: configrs0) =====
+  config-server-1:
+    image: mongo:8
+    container_name: py01_configsvr1
+    restart: unless-stopped
+    command: ["mongod", "--configsvr", "--replSet", "configrs0", "--port", "27019", "--bind_ip_all"]
+    volumes:
+      - configsvr1_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27019", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  config-server-2:
+    image: mongo:8
+    container_name: py01_configsvr2
+    restart: unless-stopped
+    command: ["mongod", "--configsvr", "--replSet", "configrs0", "--port", "27020", "--bind_ip_all"]
+    volumes:
+      - configsvr2_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27020", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  config-server-3:
+    image: mongo:8
+    container_name: py01_configsvr3
+    restart: unless-stopped
+    command: ["mongod", "--configsvr", "--replSet", "configrs0", "--port", "27021", "--bind_ip_all"]
+    volumes:
+      - configsvr3_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27021", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  # Init config server replica set
+  configsvr-setup:
+    image: mongo:8
+    container_name: py01_configsvr_setup
+    restart: "no"
+    depends_on:
+      config-server-1:
+        condition: service_healthy
+      config-server-2:
+        condition: service_healthy
+      config-server-3:
+        condition: service_healthy
+    volumes:
+      - ./infra/mongo/init-configsvr.sh:/scripts/init-configsvr.sh:ro
+    entrypoint: ["bash", "/scripts/init-configsvr.sh"]
+
+  # ===== MongoDB Shard 1 (Replica Set: shard1rs0) =====
+  shard1-node1:
+    image: mongo:8
+    container_name: py01_shard1_node1
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard1rs0", "--port", "27017", "--bind_ip_all"]
+    volumes:
+      - shard1_node1_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27017", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  shard1-node2:
+    image: mongo:8
+    container_name: py01_shard1_node2
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard1rs0", "--port", "27018", "--bind_ip_all"]
+    volumes:
+      - shard1_node2_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27018", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  shard1-node3:
+    image: mongo:8
+    container_name: py01_shard1_node3
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard1rs0", "--port", "27022", "--bind_ip_all"]
+    volumes:
+      - shard1_node3_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27022", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  # ===== MongoDB Shard 2 (Replica Set: shard2rs0) =====
+  shard2-node1:
+    image: mongo:8
+    container_name: py01_shard2_node1
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard2rs0", "--port", "27023", "--bind_ip_all"]
+    volumes:
+      - shard2_node1_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27023", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  shard2-node2:
+    image: mongo:8
+    container_name: py01_shard2_node2
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard2rs0", "--port", "27024", "--bind_ip_all"]
+    volumes:
+      - shard2_node2_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27024", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  shard2-node3:
+    image: mongo:8
+    container_name: py01_shard2_node3
+    restart: unless-stopped
+    command: ["mongod", "--shardsvr", "--replSet", "shard2rs0", "--port", "27025", "--bind_ip_all"]
+    volumes:
+      - shard2_node3_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27025", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  # Init shard replica sets
+  shards-setup:
+    image: mongo:8
+    container_name: py01_shards_setup
+    restart: "no"
+    depends_on:
+      shard1-node1:
+        condition: service_healthy
+      shard1-node2:
+        condition: service_healthy
+      shard1-node3:
+        condition: service_healthy
+      shard2-node1:
+        condition: service_healthy
+      shard2-node2:
+        condition: service_healthy
+      shard2-node3:
+        condition: service_healthy
+    volumes:
+      - ./infra/mongo/init-shards.sh:/scripts/init-shards.sh:ro
+    entrypoint: ["bash", "/scripts/init-shards.sh"]
+
+  # ===== Mongos Router =====
+  mongos:
+    image: mongo:8
+    container_name: py01_mongos
+    restart: unless-stopped
+    command: ["mongos", "--configdb", "configrs0/config-server-1:27019,config-server-2:27020,config-server-3:27021", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27017:27017"
+    depends_on:
+      configsvr-setup:
+        condition: service_completed_successfully
+      shards-setup:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "mongosh", "--host", "localhost:27017", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  # Configure sharding (add shards + shard collections)
+  sharding-setup:
+    image: mongo:8
+    container_name: py01_sharding_setup
+    restart: "no"
+    depends_on:
+      mongos:
+        condition: service_healthy
+    volumes:
+      - ./infra/mongo/init-sharding.sh:/scripts/init-sharding.sh:ro
+    entrypoint: ["bash", "/scripts/init-sharding.sh"]
+
+  # ===== Redis =====
+  redis:
+    image: redis:7
+    container_name: py01_redis
+    restart: unless-stopped
+    mem_limit: 256m
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ===== Elasticsearch =====
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.5
+    container_name: py01_elasticsearch
+    restart: unless-stopped
+    mem_limit: 1g
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 120s
+
+  # ===== API Service =====
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    restart: unless-stopped
+    mem_limit: 512m
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      sharding-setup:
+        condition: service_completed_successfully
+    ports:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - DB_ENGINE=${DB_ENGINE:-postgres}
+
+  # ===== Search Service =====
+  search:
+    build:
+      context: .
+      dockerfile: services/search/Dockerfile
+    restart: unless-stopped
+    mem_limit: 512m
+    env_file:
+      - .env
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000"
+    environment:
+      - NODE_ENV=production
+      - DB_ENGINE=${DB_ENGINE:-postgres}
+      - MONGO_URI=${MONGO_URI}
+
+  # ===== Nginx Gateway =====
+  nginx:
+    image: nginx:1.27
+    container_name: py01_nginx
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on:
+      - api
+      - search
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  postgres_data:
+  configsvr1_data:
+  configsvr2_data:
+  configsvr3_data:
+  shard1_node1_data:
+  shard1_node2_data:
+  shard1_node3_data:
+  shard2_node1_data:
+  shard2_node2_data:
+  shard2_node3_data:
+  es_data:

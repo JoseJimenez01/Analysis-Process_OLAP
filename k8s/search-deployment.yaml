@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-deployment
+  namespace: restaurantes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: search
+  template:
+    metadata:
+      labels:
+        app: search
+    spec:
+      containers:
+      - name: search
+        image: search:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4000
+        envFrom:
+        - configMapRef:
+            name: restaurantes-config
+        env:
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: ELASTIC_URL
+          value: "http://elasticsearch-service:9200"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: mongo-uri
+              optional: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
