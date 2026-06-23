@@ -12,136 +12,385 @@
 
 /* eslint-disable no-console */
 
-// ─── Realistic Data (LLM-generated) ────────────────────────────────────────
-
-const categories = [
-  { name: "Entradas", description: "Aperitivos y bocas para compartir", icon: "🥗" },
-  { name: "Platos Fuertes", description: "Platos principales de la casa", icon: "🍖" },
-  { name: "Pastas", description: "Pastas artesanales con salsas caseras", icon: "🍝" },
-  { name: "Mariscos", description: "Pescados y mariscos frescos del Pacífico", icon: "🦐" },
-  { name: "Postres", description: "Dulces y postres artesanales", icon: "🍰" },
-  { name: "Bebidas", description: "Refrescos naturales, cócteles y café", icon: "🥤" },
-  { name: "Pizzas", description: "Pizzas al horno de leña con ingredientes premium", icon: "🍕" },
-  { name: "Ensaladas", description: "Ensaladas frescas y nutritivas", icon: "🥬" }
-];
-
-const restaurants = [
-  {
-    name: "La Cocina de Doña María",
-    address: "4ta Avenida 12-30 Zona 10, Ciudad de Guatemala",
-    phone: "+502 2334-5678",
-    description: "Cocina tradicional guatemalteca con un toque moderno. Especialistas en pepián, jocón y tamales colorados preparados con recetas de tres generaciones.",
-    rating: 4.7
-  },
-  {
-    name: "El Fogón Chapín",
-    address: "6ta Calle 3-52 Zona 1, Antigua Guatemala",
-    phone: "+502 7832-1234",
-    description: "Restaurante rústico con ambiente colonial. Famoso por sus desayunos típicos, chuchitos y su incomparable chocolate caliente artesanal.",
-    rating: 4.5
-  },
-  {
-    name: "Mare Nostrum",
-    address: "Boulevard Los Próceres 18-29 Zona 10, Ciudad de Guatemala",
-    phone: "+502 2368-9012",
-    description: "Alta cocina mediterránea con los mejores mariscos importados. Ambiente elegante perfecto para cenas ejecutivas y celebraciones especiales.",
-    rating: 4.8
-  },
-  {
-    name: "Sakura Sushi Bar",
-    address: "13 Calle 2-75 Zona 10, Ciudad de Guatemala",
-    phone: "+502 2337-4567",
-    description: "Fusión japonesa-guatemalteca. Rolls creativos con ingredientes locales, ramen artesanal y una selecta carta de sake importado.",
-    rating: 4.3
-  },
-  {
-    name: "Pizzería Don Corleone",
-    address: "Avenida Reforma 8-60 Zona 9, Ciudad de Guatemala",
-    phone: "+502 2331-8901",
-    description: "Auténtica pizza napolitana horneada en horno de leña a 450°C. Masa madre fermentada 72 horas y mozzarella di bufala importada semanalmente.",
-    rating: 4.6
-  }
-];
-
-const products = [
-  // Entradas
-  { name: "Guacamole Artesanal", description: "Aguacate Hass fresco con tomate, cilantro, chile serrano y limón. Servido con totopos de maíz criollo.", price: 45.00, categoryIndex: 0, available: true },
-  { name: "Ceviche de Camarón", description: "Camarones del Pacífico marinados en limón con cebolla morada, tomate, cilantro y salsa de habanero.", price: 65.00, categoryIndex: 0, available: true },
-  { name: "Empanadas de Loroco", description: "Empanadas crujientes rellenas de loroco y queso Zacapa. Acompañadas de salsa de tomate asado.", price: 35.00, categoryIndex: 0, available: true },
-  { name: "Nachos Supremos", description: "Totopos artesanales cubiertos con frijoles volteados, guacamole, crema, jalapeños y queso fundido.", price: 55.00, categoryIndex: 0, available: true },
-
-  // Platos Fuertes
-  { name: "Pepián de Pollo", description: "Recado tradicional de pepitoria, chile pasa y tomate. Pollo de granja cocido lentamente con papas y güisquil.", price: 85.00, categoryIndex: 1, available: true },
-  { name: "Hilachas en Salsa Roja", description: "Carne de res deshebrada en salsa de tomate y chile guaque. Acompañada de arroz y tamalitos de chipilín.", price: 75.00, categoryIndex: 1, available: true },
-  { name: "Churrasco Angus", description: "Corte prime de res Angus a la parrilla, término a elección. Con chimichurri argentino, papas rústicas y ensalada.", price: 145.00, categoryIndex: 1, available: true },
-  { name: "Pollo en Jocón", description: "Pollo de granja en salsa verde de miltomate, cilantro y pepitoria. Servido con arroz y tortillas recién hechas.", price: 78.00, categoryIndex: 1, available: true },
-  { name: "Lomo Saltado", description: "Lomo fino salteado al wok con cebolla, tomate, ají amarillo y sillao. Acompañado de arroz y papas fritas.", price: 95.00, categoryIndex: 1, available: true },
-
-  // Pastas
-  { name: "Fettuccine Alfredo con Pollo", description: "Pasta fresca al huevo con salsa cremosa de parmesano reggiano y pollo a la plancha.", price: 82.00, categoryIndex: 2, available: true },
-  { name: "Spaghetti alla Puttanesca", description: "Spaghetti con salsa de tomate San Marzano, aceitunas negras, alcaparras, anchoas y ajo.", price: 72.00, categoryIndex: 2, available: true },
-  { name: "Ravioli de Ricotta y Espinaca", description: "Ravioli artesanal relleno de ricotta fresca y espinaca, bañado en salsa de mantequilla y salvia.", price: 88.00, categoryIndex: 2, available: true },
-  { name: "Penne al Pesto Genovese", description: null, price: 70.00, categoryIndex: 2, available: true },
-
-  // Mariscos
-  { name: "Robalo a la Parrilla", description: "Filete de robalo del Pacífico a la parrilla con mantequilla de hierbas, puré de camote y vegetales asados.", price: 125.00, categoryIndex: 3, available: true },
-  { name: "Camarones al Ajillo", description: "Camarones jumbo salteados en aceite de oliva con abundante ajo dorado, chile guajillo y perejil fresco.", price: 110.00, categoryIndex: 3, available: true },
-  { name: "Paella Valenciana", description: "Arroz bomba con azafrán, mariscos mixtos (camarón, mejillón, calamar), chorizo español y guisantes.", price: 165.00, categoryIndex: 3, available: false },
-  { name: "Pulpo a la Gallega", description: "", price: 135.00, categoryIndex: 3, available: true },
-
-  // Postres
-  { name: "Tres Leches Artesanal", description: "Bizcocho esponjoso bañado en leche condensada, evaporada y crema. Coronado con merengue italiano.", price: 42.00, categoryIndex: 4, available: true },
-  { name: "Churros con Chocolate", description: "Churros crujientes espolvoreados con azúcar y canela. Acompañados de chocolate caliente para dipping.", price: 38.00, categoryIndex: 4, available: true },
-  { name: "Flan de Coco", description: "Flan de coco rallado con caramelo de piloncillo y un toque de ron guatemalteco Zacapa.", price: 45.00, categoryIndex: 4, available: true },
-  { name: "Tiramisú Clásico", description: "Capas de bizcocho de café espresso, mascarpone italiano y cacao amargo. Receta original de Venecia.", price: 52.00, categoryIndex: 4, available: true },
-
-  // Bebidas
-  { name: "Limonada de Hierbabuena", description: "Limonada natural con hojas frescas de hierbabuena y un toque de jengibre. Servida con hielo.", price: 22.00, categoryIndex: 5, available: true },
-  { name: "Café de Origen Huehuetenango", description: "Café de altura 100% arábica de Huehuetenango. Tostado medio, notas de chocolate y frutos rojos.", price: 28.00, categoryIndex: 5, available: true },
-  { name: "Horchata de Morro", description: "Bebida tradicional salvadoreña de semilla de morro, cacao, canela y ajonjolí. Servida bien fría.", price: 25.00, categoryIndex: 5, available: true },
-  { name: "Mojito Clásico", description: null, price: 55.00, categoryIndex: 5, available: true },
-
-  // Pizzas
-  { name: "Pizza Margherita DOP", description: "Base de masa madre, salsa San Marzano DOP, mozzarella di bufala, albahaca fresca y aceite de oliva extra virgen.", price: 95.00, categoryIndex: 6, available: true },
-  { name: "Pizza Quattro Formaggi", description: "Cuatro quesos: mozzarella, gorgonzola, fontina y parmesano reggiano sobre base blanca de crema.", price: 105.00, categoryIndex: 6, available: true },
-  { name: "Pizza Prosciutto e Funghi", description: "Jamón prosciutto crudo di Parma, hongos porcini, mozzarella fior di latte y rúcula fresca.", price: 110.00, categoryIndex: 6, available: true },
-  { name: "Pizza Diavola", description: "Salami picante, chile calabrés, mozzarella y salsa de tomate. Para los amantes del picante.", price: 98.00, categoryIndex: 6, available: true },
-
-  // Ensaladas
-  { name: "Ensalada César", description: "Lechuga romana, crutones artesanales, parmesano en lascas y aderezo César casero con anchoas.", price: 48.00, categoryIndex: 7, available: true },
-  { name: "Ensalada Mediterránea", description: "Mix de lechugas, tomate cherry, pepino, aceitunas kalamata, queso feta y vinagreta de orégano.", price: 52.00, categoryIndex: 7, available: true },
-  { name: "Ensalada de Quinoa", description: "", price: 58.00, categoryIndex: 7, available: true }
-];
-
-const menus = [
-  { name: "Menú Ejecutivo", description: "Almuerzo de lunes a viernes. Incluye entrada, plato fuerte, bebida y postre del día.", restaurantIndex: 0, productIndices: [0, 4, 22, 18] },
-  { name: "Menú Degustación", description: "Experiencia gastronómica de 5 tiempos. Maridaje con vinos opcionales. Solo viernes y sábados.", restaurantIndex: 2, productIndices: [1, 13, 14, 20, 23] },
-  { name: "Menú Familiar", description: "Para compartir en familia. Incluye 2 entradas, 2 platos fuertes, 4 bebidas y 2 postres.", restaurantIndex: 1, productIndices: [0, 3, 5, 6, 22, 23, 18, 19] },
-  { name: "Menú Italiano", description: "Lo mejor de nuestra cocina italiana. Antipasto, primo piatto, secondo y dolce.", restaurantIndex: 4, productIndices: [10, 11, 26, 20] },
-  { name: "Menú de Mariscos", description: "Selección especial del chef con los mariscos más frescos del día. Disponible jueves a domingo.", restaurantIndex: 2, productIndices: [1, 13, 14, 15] }
-];
-
-const users = [
-  { name: "Carlos Administrador", email: "admin@restaurantes.gt", password: "Admin123!@#", role: "admin" },
-  { name: "María García", email: "maria.garcia@email.com", password: "Maria2024!", role: "customer" },
-  { name: "José López", email: "jose.lopez@email.com", password: "Jose2024!", role: "customer" },
-  { name: "Ana Martínez", email: "ana.martinez@email.com", password: "Ana2024!", role: "customer" },
-  { name: "Pedro Ramírez", email: "pedro.ramirez@email.com", password: "Pedro2024!", role: "customer" }
-];
-
-// ─── Database Seeders ───────────────────────────────────────────────────────
-
 const bcrypt = require("bcryptjs");
 const dbEngine = process.env.DB_ENGINE || "postgres";
 
+// ─── Generators ──────────────────────────────────────────────────────────────
+
+const FIRST_NAMES = [
+  "Carlos", "María", "José", "Ana", "Pedro", "Luisa", "Juan", "Sofía", "Miguel", "Elena",
+  "Diego", "Carmen", "Pablo", "Rosa", "Andrés", "Laura", "Fernando", "Diana", "Ricardo", "Claudia",
+  "Jorge", "Silvia", "Héctor", "Mariana", "Luis", "Verónica", "Antonio", "Patricia", "Manuel", "Adriana",
+  "Francisco", "Mónica", "Alejandro", "Ruth", "Alberto", "Ángela", "Rafael", "Blanca", "Eduardo", "Leticia",
+  "Sergio", "Gladys", "Guillermo", "Beatriz", "Raúl", "Lilian", "Enrique", "Marcela", "Arturo", "Yolanda"
+];
+
+const LAST_NAMES = [
+  "García", "López", "Martínez", "Ramírez", "Castillo", "González", "Pérez", "Rodríguez", "Barrios", "Mendoza",
+  "Fuentes", "Morales", "Cruz", "Vásquez", "Reyes", "Hernández", "Flores", "Díaz", "Álvarez", "Ortiz",
+  "Herández", "Mejía", "Aguilar", "Rivera", "Romero", "Torres", "Castro", "Monzón", "Velásquez", "Guerrero",
+  "Miranda", "Rivas", "Soto", "Valenzuela", "Navarro", "Ramos", "Ortega", "Molina", "Delgado", "Ibarra",
+  "Sandoval", "Pineda", "Escobar", "Alvarado", "Cifuentes", "Cordón", "Coronado", "Lemus", "Solórzano", "Sagastume"
+];
+
+const CITIES = [
+  "Ciudad de Guatemala", "Antigua Guatemala", "Quetzaltenango", "Escuintla", "Mixco",
+  "Villa Nueva", "San Miguel Petapa", "Santa Catarina Pinula", "Chimaltenango", "Cobán",
+  "Huehuetenango", "Mazatenango", "Totonicapán", "Jalapa", "Zacapa",
+  "Retalhuleu", "Chiquimula", "Puerto Barrios", "Sololá", "San Marcos",
+  "Jutiapa", "Santa Elena", "Cuilapa", "El Progreso", "Salamá"
+];
+
+const RESTAURANT_NAMES = [
+  "El Rincón {adj}", "La Casa {adj}", "Sabores {adj}", "El Sazón {adj}", "La Mesa {adj}",
+  "Don {adj}", "Doña {adj}", "San {adj}", "Los {adj}", "Las {adj}",
+  "{adj} Grill", "{adj} Café", "{adj} Bistro", "{adj} Express", "{adj} Palace",
+  "Cantina {adj}", "Fonda {adj}", "Taberna {adj}", "Parrilla {adj}", "Asados {adj}"
+];
+
+const RESTAURANT_ADJS = [
+  "de Don José", "de Doña María", "Chapín", "del Lago", "del Volcán",
+  "Maya", "de la Abuela", "del Chef", "Real", "Imperial",
+  "del Mercado", "de la Plaza", "del Valle", "Campestre", "Rústico",
+  "del Pueblo", "de la Montaña", "Tradicional", "Artesanal", "Colonial",
+  "Moderno", "del Bosque", "de la Finca", "del Río", "Dorado",
+  "Verde", "del Sol", "de la Luna", "del Camino", "Nuevo"
+];
+
+const PRODUCT_ADJS = [
+  "Artesanal", "Tradicional", "Rústico", "Cremoso", "Crujiente",
+  "Ahumado", "Gratinado", "Salteado", "Asado", "Marinado",
+  "Bañado", "Relleno", "Esponjoso", "Glaseado", "Caramelizado",
+  "Chamuscado", "Dorado", "Horneado", "Jugoso", "Empanizado"
+];
+
+const PRODUCT_NOUNS = [
+  "Pollo", "Res", "Cerdo", "Camarón", "Pescado",
+  "Chorizo", "Lomo", "Pechuga", "Costilla", "Solomillo"
+];
+
+const ADDRESSES = [
+  "{num} Calle {num2}-{num3} Zona {zone}, {city}",
+  "Avenida {name} {num2}-{num3} Zona {zone}, {city}",
+  "Boulevard {name} {num2}-{num3} Zona {zone}, {city}",
+  "{num} Avenida {num2}-{num3} Zona {zone}, {city}"
+];
+
+const ADDRESS_NAMES = [
+  "Reforma", "Las Américas", "Los Próceres", "La Castellana", "La Paz",
+  "España", "Ciprés", "De León", "Sierra Nevada", "Guatemala Indígena"
+];
+
+const MENU_TYPES = [
+  "Ejecutivo", "Degustación", "Familiar", "Infantil", "Del Chef",
+  "Maridaje", "Express", "Fines de Semana", "Tradicional", "Gourmet",
+  "Ligero", "Ejecutivo Plus", "Negocios", "Premium", "Especial"
+];
+
+const SPECIAL_REQUESTS = [
+  null,
+  "Mesa junto a la ventana por favor",
+  "Alergia a los mariscos",
+  "Aniversario, pastel y velas por favor",
+  "Mesa alejada del ruido",
+  "Silla para bebé",
+  "Celebración de cumpleaños",
+  "Sin lactosa, por favor",
+  "Vegetariano, sin carne",
+  "Mesa en área de no fumadores"
+];
+
+// ─── Data Generators ────────────────────────────────────────────────────────
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function pickN(arr, n) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randFloat(min, max, decimals = 2) {
+  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
+}
+
+function generateRestaurantName() {
+  const template = pick(RESTAURANT_NAMES);
+  return template.replace("{adj}", pick(RESTAURANT_ADJS));
+}
+
+function generateAddress() {
+  const template = pick(ADDRESSES);
+  return template
+    .replace(/\{num\}/g, randInt(1, 30))
+    .replace(/\{num2\}/g, randInt(1, 99))
+    .replace(/\{num3\}/g, randInt(1, 99))
+    .replace("{zone}", randInt(1, 25))
+    .replace("{city}", pick(CITIES))
+    .replace("{name}", pick(ADDRESS_NAMES));
+}
+
+function generatePhone() {
+  return `+502 ${randInt(2000, 9999)}-${randInt(1000, 9999)}`;
+}
+
+function generateDescription(type, name) {
+  const templates = {
+    restaurant: [
+      `Cocina tradicional con los mejores {type} de la región. Ambiente acogedor y servicio de primera.`,
+      `Especialistas en {type}y platos típicos guatemaltecos preparados con recetas de generaciones.`,
+      `Restaurante con ambiente familiar conocido por su excelente {type}. Ingredientes frescos y locales.`,
+      `Alta cocina con {type}de primera calidad. El lugar perfecto para cualquier ocasión especial.`,
+      `Sabores auténticos que cuentan historias. {type}preparados con las recetas más tradicionales.`,
+      `Desde hace más de 10 años ofreciendo el mejor {type}de la ciudad. Calidad y tradición nos respaldan.`,
+      `Fusión de sabores guatemaltecos con técnicas modernas. {type}preparados por chefs galardonados.`
+    ],
+    product: [
+      `Nuestro {adj} {name}, preparado con ingredientes seleccionados y la receta secreta de la casa.`,
+      `Exquisito {adj} {name} servido con guarniciones tradicionales y salsas artesanales.`,
+      `Delicioso {adj} {name} elaborado con productos frescos del día y especias naturales.`,
+      `El {adj} {name} perfecto para los paladares más exigentes. Plato estrella de la casa.`,
+      `Pruebe nuestro {adj} {name}, una combinación única de sabores y texturas inolvidables.`
+    ]
+  };
+  const pool = templates[type] || templates.product;
+  return pick(pool)
+    .replace(/\{type\}/g, pick(["platos", "carnes", "mariscos", "pastas", "parrilla ", "comida ", "sopas ", "guisados "]))
+    .replace("{name}", name)
+    .replace("{adj}", pick(PRODUCT_ADJS));
+}
+
+function generateEmail(name) {
+  const domains = ["email.com", "correo.gt", "mail.gt", "outlook.com", "yahoo.com", "hotmail.com"];
+  const normalized = name.toLowerCase().replace(/\s+/g, ".").replace(/[ñáéíóú]/g, c => ({ ñ: "n", á: "a", é: "e", í: "i", ó: "o", ú: "u" })[c] || c);
+  const num = Math.random() > 0.3 ? randInt(1, 999) : "";
+  return `${normalized}${num}@${pick(domains)}`;
+}
+
+function generateProductName(categoryIndex) {
+  const catNames = [
+    ["Guacamole", "Ceviche", "Empanadas", "Nachos", "Tostadas", "Taquitos", "Bruschettas", "Croquetas"],
+    ["Pepián", "Hilachas", "Churrasco", "Lomo Saltado", "Carne Asada", "Pollo", "Cerdo", "Costillas"],
+    ["Fettuccine", "Spaghetti", "Ravioli", "Penne", "Lasagna", "Rigatoni", "Linguine", "Tortellini"],
+    ["Robalo", "Camarones", "Paella", "Pulpo", "Langosta", "Ceviche Mixto", "Filete de Pescado", "Calamares"],
+    ["Tres Leches", "Churros", "Flan", "Tiramisú", "Pastel", "Helado", "Mousse", "Crème Brûlée"],
+    ["Limonada", "Café", "Horchata", "Mojito", "Smoothie", "Agua Fresca", "Refresco", "Té"],
+    ["Pizza Margherita", "Pizza Pepperoni", "Pizza Suprema", "Pizza Vegetariana", "Pizza BBQ", "Pizza Hawaiana", "Pizza de la Casa", "Calzone"],
+    ["Ensalada César", "Ensalada Mixta", "Ensalada de Quinoa", "Ensalada Griega", "Ensalada Waldorf", "Ensalada Caprese", "Wrap", "Bowl"]
+  ];
+  const base = pick(catNames[categoryIndex] || catNames[0]);
+  const adj = Math.random() > 0.5 ? ` ${pick(PRODUCT_ADJS)}` : "";
+  return `${base}${adj}`;
+}
+
+function ratingFromIndex(i, total) {
+  const base = 3.5 + (i / total) * 1.5;
+  return parseFloat(Math.min(5, base + (Math.random() - 0.5) * 0.4).toFixed(1));
+}
+
+// ─── Target Record Counts (total ~5000) ──────────────────────────────────────
+
+const TARGETS = {
+  categories: 16,
+  restaurants: 30,
+  products: 1200,
+  users: 1500,
+  menus: 120,
+  reservations: 2500 // brings total to ~5000+ across all entities
+};
+
+// ─── Generate data arrays ───────────────────────────────────────────────────
+
+function generateCategories() {
+  const base = [
+    { name: "Entradas", description: "Aperitivos y bocas para compartir", icon: "🥗" },
+    { name: "Platos Fuertes", description: "Platos principales de la casa", icon: "🍖" },
+    { name: "Pastas", description: "Pastas artesanales con salsas caseras", icon: "🍝" },
+    { name: "Mariscos", description: "Pescados y mariscos frescos del Pacífico", icon: "🦐" },
+    { name: "Postres", description: "Dulces y postres artesanales", icon: "🍰" },
+    { name: "Bebidas", description: "Refrescos naturales, cócteles y café", icon: "🥤" },
+    { name: "Pizzas", description: "Pizzas al horno de leña con ingredientes premium", icon: "🍕" },
+    { name: "Ensaladas", description: "Ensaladas frescas y nutritivas", icon: "🥬" }
+  ];
+  const extra = [
+    { name: "Tapas", description: "Tapas españolas con toque guatemalteco", icon: "🧆" },
+    { name: "Desayunos", description: "Desayunos típicos y contundentes", icon: "🌅" },
+    { name: "Sopas", description: "Sopas y caldos caseros reconfortantes", icon: "🍜" },
+    { name: "Sándwiches", description: "Sándwiches gourmet y wraps", icon: "🥪" },
+    { name: "Carnes", description: "Cortes de carne seleccionados a la parrilla", icon: "🥩" },
+    { name: "Vegetariano", description: "Platos vegetarianos saludables y sabrosos", icon: "🥦" },
+    { name: "Coctelería", description: "Cócteles de autor y clásicos", icon: "🍸" },
+    { name: "Infantil", description: "Platos especiales para los más pequeños", icon: "🧒" }
+  ];
+  return [...base, ...extra].slice(0, TARGETS.categories);
+}
+
+function generateRestaurants() {
+  const results = [];
+  for (let i = 0; i < TARGETS.restaurants; i++) {
+    results.push({
+      name: generateRestaurantName(),
+      address: generateAddress(),
+      phone: generatePhone(),
+      description: generateDescription("restaurant", ""),
+      rating: ratingFromIndex(i, TARGETS.restaurants)
+    });
+  }
+  return results;
+}
+
+function generateProducts(categoryCount) {
+  const results = [];
+  const categories = generateCategories();
+  for (let i = 0; i < TARGETS.products; i++) {
+    const catIdx = i % categoryCount;
+    const name = generateProductName(catIdx);
+    const hasDesc = Math.random() > 0.15;
+    results.push({
+      name,
+      description: hasDesc ? generateDescription("product", name) : "",
+      price: randFloat(18, 220),
+      categoryIndex: catIdx,
+      available: Math.random() > 0.08
+    });
+  }
+  return results;
+}
+
+function generateUsers() {
+  const results = [];
+  const usedEmails = new Set();
+  // admin
+  results.push({ name: "Carlos Administrador", email: "admin@restaurantes.gt", password: "Admin123!@#", role: "admin" });
+  usedEmails.add("admin@restaurantes.gt");
+
+  for (let i = 1; i < TARGETS.users; i++) {
+    const first = pick(FIRST_NAMES);
+    const last = pick(LAST_NAMES);
+    const name = `${first} ${last}`;
+    let email = generateEmail(name);
+    while (usedEmails.has(email)) {
+      email = generateEmail(`${name}${randInt(1, 999)}`);
+    }
+    usedEmails.add(email);
+    const roles = ["customer", "customer", "customer", "customer", "admin"];
+    results.push({
+      name,
+      email,
+      password: `Pass${randInt(1000, 9999)}!`,
+      role: i < 5 ? "admin" : "customer"
+    });
+  }
+  return results;
+}
+
+function generateMenus(restaurantCount) {
+  const results = [];
+  // Ensure each restaurant has at least 2 menus
+  let idx = 0;
+  for (let r = 0; r < restaurantCount; r++) {
+    const menusPerRest = r < 2 ? randInt(4, 6) : randInt(2, 5);
+    for (let m = 0; m < menusPerRest && idx < TARGETS.menus; m++) {
+      const type = pick(MENU_TYPES);
+      const isActive = Math.random() > 0.1;
+      results.push({
+        name: `Menú ${type}`,
+        description: `${type === "Ejecutivo" ? "Almuerzo rápido" : type === "Degustación" ? "Experiencia gastronómica" : "Selección especial"}. ${isActive ? "Disponible todos los días." : "Próximamente."}`,
+        restaurantIndex: r,
+        active: isActive
+      });
+      idx++;
+    }
+  }
+  return results;
+}
+
+function generateMenuProducts(menus, products, restaurantCount) {
+  const results = [];
+  // Build a map of categoryIndex -> product IDs for each restaurant's products
+  const productIdsByCat = {};
+  for (let i = 0; i < products.length; i++) {
+    const cat = products[i].categoryIndex;
+    if (!productIdsByCat[cat]) productIdsByCat[cat] = [];
+    productIdsByCat[cat].push(i);
+  }
+
+  for (let m = 0; m < menus.length; m++) {
+    const productCount = randInt(5, 15);
+    const restaurantIdx = menus[m].restaurantIndex;
+    const usedProductIndices = new Set();
+
+    // Pick products from restaurant-relevant categories
+    for (let p = 0; p < productCount; p++) {
+      // Weight toward categories that have products
+      const catKeys = Object.keys(productIdsByCat);
+      if (catKeys.length === 0) break;
+      const cat = Number(catKeys[p % catKeys.length]);
+      const pool = productIdsByCat[cat] || [];
+      if (pool.length === 0) continue;
+
+      let attempts = 0;
+      let prodIdx;
+      do {
+        prodIdx = pick(pool);
+        attempts++;
+      } while (usedProductIndices.has(prodIdx) && attempts < 20);
+
+      if (!usedProductIndices.has(prodIdx)) {
+        usedProductIndices.add(prodIdx);
+        results.push({
+          productIndex: prodIdx
+        });
+      }
+    }
+  }
+  return results;
+}
+
+function generateReservations(users, restaurants, menuProducts) {
+  const statuses = ["pending", "confirmed", "completed", "cancelled", "confirmed", "completed"];
+  const results = [];
+  const baseDate = new Date("2024-06-01");
+  for (let i = 0; i < TARGETS.reservations; i++) {
+    const userIdx = i % users.length;
+    const restIdx = i % restaurants.length;
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + randInt(0, 365));
+    date.setHours(randInt(11, 21), randInt(0, 59), 0, 0);
+    results.push({
+      userIndex: userIdx,
+      restaurantIndex: restIdx,
+      reservationDate: date,
+      partySize: randInt(1, 12),
+      status: pick(statuses),
+      specialRequests: Math.random() > 0.7 ? pick(SPECIAL_REQUESTS.filter(Boolean)) : null
+    });
+  }
+  return results;
+}
+
+// ─── Database Seeders ───────────────────────────────────────────────────────
+
 async function seedPostgres() {
-  // Reuse the app's db config which already handles Prisma 7 driver adapter setup
   const { getPrismaClient } = require("../../services/api/src/config/db");
   const prisma = getPrismaClient();
 
   if (!prisma) {
     throw new Error("Could not initialize PrismaClient. Check DATABASE_URL is set.");
   }
+
+  const categoriesData = generateCategories();
+  const restaurantsData = generateRestaurants();
+  const productsData = generateProducts(categoriesData.length);
+  const usersData = generateUsers();
+  const menusData = generateMenus(restaurantsData.length);
+  const menuProductsData = generateMenuProducts(menusData, productsData, restaurantsData.length);
+  const reservationsData = generateReservations(usersData, restaurantsData, menuProductsData);
 
   try {
     console.log("Cleaning existing data...");
@@ -155,71 +404,87 @@ async function seedPostgres() {
 
     console.log("Seeding categories...");
     const createdCategories = [];
-    for (const cat of categories) {
-      const created = await prisma.category.create({ data: cat });
-      createdCategories.push(created);
+    for (const cat of categoriesData) {
+      createdCategories.push(await prisma.category.create({ data: cat }));
     }
 
     console.log("Seeding restaurants...");
     const createdRestaurants = [];
-    for (const rest of restaurants) {
-      const created = await prisma.restaurant.create({ data: rest });
-      createdRestaurants.push(created);
+    for (const rest of restaurantsData) {
+      createdRestaurants.push(await prisma.restaurant.create({ data: rest }));
     }
 
-    console.log("Seeding products...");
+    console.log(`Seeding ${productsData.length} products...`);
     const createdProducts = [];
-    for (const prod of products) {
+    for (const prod of productsData) {
       const { categoryIndex, ...data } = prod;
       data.categoryId = createdCategories[categoryIndex].id;
       data.description = data.description || "";
       data.imageUrl = `https://placehold.co/400x300?text=${encodeURIComponent(data.name)}`;
-      const created = await prisma.product.create({ data });
-      createdProducts.push(created);
+      createdProducts.push(await prisma.product.create({ data }));
     }
 
-    console.log("Seeding users...");
+    console.log(`Seeding ${usersData.length} users...`);
     const createdUsers = [];
-    for (const user of users) {
+    for (const user of usersData) {
       const passwordHash = await bcrypt.hash(user.password, 10);
-      const created = await prisma.user.create({
+      createdUsers.push(await prisma.user.create({
         data: { name: user.name, email: user.email, passwordHash, role: user.role }
-      });
-      createdUsers.push(created);
+      }));
     }
 
-    console.log("Seeding menus...");
-    for (const menu of menus) {
-      const { restaurantIndex, productIndices, ...data } = menu;
+    console.log(`Seeding ${menusData.length} menus...`);
+    const createdMenus = [];
+    for (const menu of menusData) {
+      const { restaurantIndex, active, ...data } = menu;
       data.restaurantId = createdRestaurants[restaurantIndex].id;
-      const created = await prisma.menu.create({ data });
-      for (let i = 0; i < productIndices.length; i++) {
+      createdMenus.push(await prisma.menu.create({ data: { ...data, active } }));
+    }
+
+    console.log(`Seeding menu products...`);
+    let mpCount = 0;
+    for (let m = 0; m < createdMenus.length; m++) {
+      const menuProductsForMenu = menuProductsData.filter(mp => {
+        // Assign products to menus based on product index range for this menu
+        const startIdx = m * 10;
+        return mp.productIndex >= startIdx && mp.productIndex < startIdx + 10 && mp.productIndex < productsData.length;
+      });
+      for (let p = 0; p < Math.min(menuProductsForMenu.length, 12); p++) {
+        const mp = menuProductsForMenu[p];
         await prisma.menuProduct.create({
-          data: { menuId: created.id, productId: createdProducts[productIndices[i]].id, displayOrder: i + 1 }
+          data: {
+            menuId: createdMenus[m].id,
+            productId: createdProducts[mp.productIndex].id,
+            displayOrder: p + 1
+          }
         });
+        mpCount++;
       }
     }
 
-    console.log("Seeding reservations...");
-    const statuses = ["pending", "confirmed", "completed", "cancelled"];
-    for (let i = 0; i < 10; i++) {
-      const userIdx = (i % (createdUsers.length - 1)) + 1;
-      const restIdx = i % createdRestaurants.length;
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + i + 1);
+    console.log(`Seeding ${reservationsData.length} reservations...`);
+    for (const res of reservationsData) {
       await prisma.reservation.create({
         data: {
-          userId: createdUsers[userIdx].id,
-          restaurantId: createdRestaurants[restIdx].id,
-          reservationDate: futureDate,
-          partySize: Math.floor(Math.random() * 8) + 1,
-          status: statuses[i % statuses.length],
-          specialRequests: i % 3 === 0 ? "Mesa junto a la ventana por favor" : null
+          userId: createdUsers[res.userIndex].id,
+          restaurantId: createdRestaurants[res.restaurantIndex].id,
+          reservationDate: res.reservationDate,
+          partySize: res.partySize,
+          status: res.status,
+          specialRequests: res.specialRequests
         }
       });
     }
 
-    return { categories: createdCategories.length, restaurants: createdRestaurants.length, products: createdProducts.length, users: createdUsers.length, menus: menus.length };
+    return {
+      categories: createdCategories.length,
+      restaurants: createdRestaurants.length,
+      products: createdProducts.length,
+      users: createdUsers.length,
+      menus: createdMenus.length,
+      menuProducts: mpCount,
+      reservations: TARGETS.reservations
+    };
   } finally {
     await prisma.$disconnect();
   }
@@ -263,6 +528,14 @@ async function seedMongo() {
   const MenuProduct = mongoose.models.MenuProduct || mongoose.model("MenuProduct", MenuProductSchema);
   const Reservation = mongoose.models.Reservation || mongoose.model("Reservation", ReservationSchema);
 
+  const categoriesData = generateCategories();
+  const restaurantsData = generateRestaurants();
+  const productsData = generateProducts(categoriesData.length);
+  const usersData = generateUsers();
+  const menusData = generateMenus(restaurantsData.length);
+  const menuProductsData = generateMenuProducts(menusData, productsData, restaurantsData.length);
+  const reservationsData = generateReservations(usersData, restaurantsData, menuProductsData);
+
   console.log("Cleaning existing data...");
   await Promise.all([
     Category.deleteMany({}), Restaurant.deleteMany({}), Product.deleteMany({}),
@@ -270,13 +543,13 @@ async function seedMongo() {
   ]);
 
   console.log("Seeding categories...");
-  const createdCategories = await Category.insertMany(categories);
+  const createdCategories = await Category.insertMany(categoriesData);
 
   console.log("Seeding restaurants...");
-  const createdRestaurants = await Restaurant.insertMany(restaurants);
+  const createdRestaurants = await Restaurant.insertMany(restaurantsData);
 
-  console.log("Seeding products...");
-  const productDocs = products.map(p => {
+  console.log(`Seeding ${productsData.length} products...`);
+  const productDocs = productsData.map(p => {
     const { categoryIndex, ...data } = p;
     data.categoryId = createdCategories[categoryIndex]._id;
     data.description = data.description || "";
@@ -285,52 +558,84 @@ async function seedMongo() {
   });
   const createdProducts = await Product.insertMany(productDocs);
 
-  console.log("Seeding users...");
+  console.log(`Seeding ${usersData.length} users...`);
   const userDocs = [];
-  for (const user of users) {
+  for (const user of usersData) {
     const passwordHash = await bcrypt.hash(user.password, 10);
     userDocs.push({ name: user.name, email: user.email, passwordHash, role: user.role });
   }
   const createdUsers = await User.insertMany(userDocs);
 
-  console.log("Seeding menus...");
-  for (const menu of menus) {
-    const { restaurantIndex, productIndices, ...data } = menu;
+  console.log(`Seeding ${menusData.length} menus...`);
+  const menuDocs = menusData.map(menu => {
+    const { restaurantIndex, ...data } = menu;
     data.restaurantId = createdRestaurants[restaurantIndex]._id;
-    const created = await Menu.create(data);
-    const menuProductDocs = productIndices.map((pi, i) => ({
-      menuId: created._id, productId: createdProducts[pi]._id, displayOrder: i + 1
-    }));
-    await MenuProduct.insertMany(menuProductDocs);
+    return data;
+  });
+  const createdMenus = await Menu.insertMany(menuDocs);
+
+  console.log(`Seeding menu products...`);
+  let mpCount = 0;
+  for (let m = 0; m < createdMenus.length; m++) {
+    const menuProductDocs = [];
+    for (let p = 0; p < Math.min(12, createdProducts.length); p++) {
+      const prodIdx = (m * 7 + p) % createdProducts.length;
+      menuProductDocs.push({
+        menuId: createdMenus[m]._id,
+        productId: createdProducts[prodIdx]._id,
+        displayOrder: p + 1
+      });
+      mpCount++;
+    }
+    if (menuProductDocs.length > 0) {
+      await MenuProduct.insertMany(menuProductDocs);
+    }
   }
 
-  console.log("Seeding reservations...");
-  const statuses = ["pending", "confirmed", "completed", "cancelled"];
-  const reservationDocs = [];
-  for (let i = 0; i < 10; i++) {
-    const userIdx = (i % (createdUsers.length - 1)) + 1;
-    const restIdx = i % createdRestaurants.length;
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + i + 1);
-    reservationDocs.push({
-      userId: createdUsers[userIdx]._id,
-      restaurantId: createdRestaurants[restIdx]._id,
-      reservationDate: futureDate,
-      partySize: Math.floor(Math.random() * 8) + 1,
-      status: statuses[i % statuses.length],
-      specialRequests: i % 3 === 0 ? "Mesa junto a la ventana por favor" : null
-    });
-  }
+  console.log(`Seeding ${reservationsData.length} reservations...`);
+  const reservationDocs = reservationsData.map(res => ({
+    userId: createdUsers[res.userIndex]._id,
+    restaurantId: createdRestaurants[res.restaurantIndex]._id,
+    reservationDate: res.reservationDate,
+    partySize: res.partySize,
+    status: res.status,
+    specialRequests: res.specialRequests
+  }));
   await Reservation.insertMany(reservationDocs);
 
   await mongoose.disconnect();
-  return { categories: createdCategories.length, restaurants: createdRestaurants.length, products: createdProducts.length, users: createdUsers.length, menus: menus.length };
+  return {
+    categories: createdCategories.length,
+    restaurants: createdRestaurants.length,
+    products: createdProducts.length,
+    users: createdUsers.length,
+    menus: createdMenus.length,
+    menuProducts: mpCount,
+    reservations: reservationsData.length
+  };
 }
 
 // ─── Main ──────────────────────────────────────────────────────────────────
 
 async function main() {
   console.log(`\n🌱 Seed Data Generator — Engine: ${dbEngine}\n`);
+
+  const categoriesData = generateCategories();
+  const restaurantsData = generateRestaurants();
+  const productsData = generateProducts(categoriesData.length);
+  const usersData = generateUsers();
+  const menusData = generateMenus(restaurantsData.length);
+  const menuProductsData = generateMenuProducts(menusData, productsData, restaurantsData.length);
+  const reservationsData = generateReservations(usersData, restaurantsData, menuProductsData);
+
+  console.log("Generated data counts:");
+  console.log(`   Categories:   ${categoriesData.length}`);
+  console.log(`   Restaurants:  ${restaurantsData.length}`);
+  console.log(`   Products:     ${productsData.length}`);
+  console.log(`   Users:        ${usersData.length}`);
+  console.log(`   Menus:        ${menusData.length}`);
+  console.log(`   Reservations: ${reservationsData.length}`);
+  console.log(`   Total:        ${categoriesData.length + restaurantsData.length + productsData.length + usersData.length + menusData.length + reservationsData.length}\n`);
 
   try {
     const result = dbEngine === "mongodb" ? await seedMongo() : await seedPostgres();
@@ -341,7 +646,8 @@ async function main() {
     console.log(`   Products:     ${result.products}`);
     console.log(`   Users:        ${result.users}`);
     console.log(`   Menus:        ${result.menus}`);
-    console.log(`   Reservations: 10\n`);
+    console.log(`   MenuProducts: ${result.menuProducts}`);
+    console.log(`   Reservations: ${result.reservations}\n`);
   } catch (error) {
     console.error("❌ Seeding failed:", error.message);
     process.exit(1);

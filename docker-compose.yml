@@ -313,6 +313,73 @@ services:
     volumes:
       - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
+  # ===== Hive Metastore Database =====
+  hive-metastore-db:
+    image: postgres:16-alpine
+    container_name: py01_hive_metastore_db
+    restart: unless-stopped
+    mem_limit: 256m
+    environment:
+      POSTGRES_DB: metastore_db
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+    volumes:
+      - hive_metastore_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ===== Hive Metastore (Thrift interface on 9083) =====
+  hive-metastore:
+    image: apache/hive:4.0.0
+    container_name: py01_hive_metastore
+    restart: unless-stopped
+    mem_limit: 512m
+    depends_on:
+      hive-metastore-db:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: metastore
+      DB_DRIVER: postgres
+      POSTGRES_HOST: hive-metastore-db
+      POSTGRES_DATABASE: metastore_db
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+    ports:
+      - "9083:9083"
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -tln | grep 9083 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # ===== HiveServer2 (JDBC on 10000, Web UI on 10002) =====
+  hive-server:
+    image: apache/hive:4.0.0
+    container_name: py01_hive_server
+    restart: unless-stopped
+    mem_limit: 1g
+    depends_on:
+      hive-metastore:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: hiveserver2
+      DB_DRIVER: postgres
+      POSTGRES_HOST: hive-metastore-db
+      POSTGRES_DATABASE: metastore_db
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+      HIVE_METASTORE_HOST: hive-metastore
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    volumes:
+      - ./analytics/warehouse:/warehouse
+
 volumes:
   postgres_data:
   configsvr1_data:
@@ -325,3 +392,4 @@ volumes:
   shard2_node2_data:
   shard2_node3_data:
   es_data:
+  hive_metastore_data:
