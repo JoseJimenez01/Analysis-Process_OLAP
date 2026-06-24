@@ -408,6 +408,125 @@ services:
     healthcheck:
       disable: true
 
+  # ===== Spark Master =====
+  spark-master:
+    image: spark:3.5.8-python3
+    container_name: py01_spark_master
+    restart: unless-stopped
+    mem_limit: 1g
+    user: root
+    ports:
+      - "7077:7077"
+      - "8081:8080"        # Spark Master Web UI (8081 host → 8080 container, 8080 es de Airflow)
+    volumes:
+      - ./analytics/spark:/opt/spark/analytics
+      - ./analytics/reports:/opt/spark/reports
+      - ./analytics/warehouse:/opt/spark/warehouse
+    command: >
+      bash -c "
+        /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master \
+        --host spark-master \
+        --port 7077 \
+        --webui-port 8080
+      "
+
+  # ===== Spark Worker =====
+  spark-worker:
+    image: spark:3.5.8-python3
+    container_name: py01_spark_worker
+    restart: unless-stopped
+    mem_limit: 2g
+    user: root
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 1g
+    volumes:
+      - ./analytics/spark:/opt/spark/analytics
+      - ./analytics/reports:/opt/spark/reports
+      - ./analytics/warehouse:/opt/spark/warehouse
+    command: >
+      bash -c "
+        /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker \
+        spark://spark-master:7077
+      "
+
+  # ===== Superset (BI para análisis del Data Warehouse) =====
+  superset:
+    image: apache/superset:4.1.1
+    container_name: py01_superset
+    restart: unless-stopped
+    mem_limit: 1g
+    depends_on:
+      hive-server:
+        condition: service_started
+    environment:
+      SUPERSET_SECRET_KEY: change_me_superset_123
+      SUPERSET_CONFIG_PATH: /app/superset_config.py
+      PYTHONPATH: /app
+    ports:
+      - "8088:8088"        # Superset Web UI
+    volumes:
+      - ./analytics/superset/superset_config.py:/app/superset_config.py
+      - ./analytics/superset/init_superset.py:/app/init_superset.py
+      - ./analytics/superset/export_reports.py:/app/export_reports.py
+      - ./analytics/reports:/app/reports
+    command: >
+      bash -c "
+        pip install pyhive thrift sasl thrift-sasl --quiet 2>/dev/null &&
+        superset fab create-admin \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --email admin@example.com \
+          --password admin 2>/dev/null; true &&
+        superset db upgrade &&
+        superset init 2>/dev/null; true &&
+        echo '=== Superset listo en http://localhost:8088 (admin/admin) ===' &&
+        superset run -p 8088 --host 0.0.0.0 --with-threads --reload
+      "
+
+  # ===== Airflow =====
+  airflow:
+    image: apache/airflow:3.2.2
+    container_name: py01_airflow
+    restart: unless-stopped
+    mem_limit: 1g
+    depends_on:
+      - spark-master
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW_ADMIN_USER=admin
+      - AIRFLOW_ADMIN_PASSWORD=admin
+      - AIRFLOW__CORE__FERNET_KEY=
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+    ports:
+      - "8080:8080"        # Airflow Web UI
+    volumes:
+      - ./analytics/airflow/dag:/opt/airflow/dags
+      - ./analytics/spark:/opt/airflow/spark
+      - ./analytics/superset:/opt/airflow/superset
+      - ./analytics/reports:/opt/airflow/reports
+      - airflow_data:/opt/airflow
+    command: >
+      bash -c "
+        pip install 'pyspark==3.5.8' 'pyhive[hive]' thrift thrift-sasl --quiet 2>/dev/null &&
+        airflow db init &&
+        airflow users create
+          --username admin
+          --firstname Admin
+          --lastname User
+          --role Admin
+          --email admin@example.com
+          --password admin 2>/dev/null || true &&
+        airflow webserver & sleep 5 &&
+        airflow scheduler
+      "
+
 volumes:
   postgres_data:
   configsvr1_data:
@@ -421,3 +540,4 @@ volumes:
   shard2_node3_data:
   es_data:
   hive_metastore_data:
+  airflow_data:
