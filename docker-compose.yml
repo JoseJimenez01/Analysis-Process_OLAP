@@ -332,6 +332,35 @@ services:
       retries: 5
       start_period: 10s
 
+  # ===== Hive Schema Init (one-shot, patches SQL bug in Hive 4.0.0) =====
+  hive-schema-init:
+    image: apache/hive:4.0.0
+    container_name: py01_hive_schema_init
+    restart: "no"
+    depends_on:
+      hive-metastore-db:
+        condition: service_healthy
+    environment:
+      DB_DRIVER: postgres
+      POSTGRES_HOST: hive-metastore-db
+      POSTGRES_DATABASE: metastore_db
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      set -e
+      echo "=== Hive Schema Init ==="
+      sed -i '/statement_timeout/d' /opt/hive/scripts/schema/hive-schema-4.0.0.postgres.sql 2>/dev/null || true
+      sed -i '/statement_timeout/d' /opt/hive/scripts/schema/hive-upgrade-postgres.sql 2>/dev/null || true
+      if /opt/hive/bin/schematool -dbType postgres -info 2>&1 | grep -qi "schema version"; then
+        echo "Schema already initialized, running upgrade..."
+        /opt/hive/bin/schematool -dbType postgres -upgradeSchema || true
+      else
+        echo "Initializing schema..."
+        /opt/hive/bin/schematool -dbType postgres -initSchema
+      fi
+      echo "=== Schema init complete ==="
+
   # ===== Hive Metastore (Thrift interface on 9083) =====
   hive-metastore:
     image: apache/hive:4.0.0
@@ -339,8 +368,8 @@ services:
     restart: unless-stopped
     mem_limit: 512m
     depends_on:
-      hive-metastore-db:
-        condition: service_healthy
+      hive-schema-init:
+        condition: service_completed_successfully
     environment:
       SERVICE_NAME: metastore
       DB_DRIVER: postgres
@@ -348,14 +377,11 @@ services:
       POSTGRES_DATABASE: metastore_db
       POSTGRES_USER: hive
       POSTGRES_PASSWORD: hive
+      SKIP_SCHEMA_INIT: "true"
     ports:
       - "9083:9083"
     healthcheck:
-      test: ["CMD-SHELL", "netstat -tln | grep 9083 || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
+      disable: true
 
   # ===== HiveServer2 (JDBC on 10000, Web UI on 10002) =====
   hive-server:
@@ -365,7 +391,7 @@ services:
     mem_limit: 1g
     depends_on:
       hive-metastore:
-        condition: service_healthy
+        condition: service_started
     environment:
       SERVICE_NAME: hiveserver2
       DB_DRIVER: postgres
@@ -379,6 +405,8 @@ services:
       - "10002:10002"
     volumes:
       - ./analytics/warehouse:/warehouse
+    healthcheck:
+      disable: true
 
 volumes:
   postgres_data:

@@ -13,8 +13,18 @@ echo "✓ Mongos is ready"
 
 echo "Adding shards to the cluster..."
 mongosh --host mongos:27017 --eval '
-  sh.addShard("shard1rs0/shard1-node1:27017,shard1-node2:27018,shard1-node3:27022");
-  sh.addShard("shard2rs0/shard2-node1:27023,shard2-node2:27024,shard2-node3:27025");
+  const listShards = db.adminCommand({ listShards: 1 });
+  const existing = (listShards.ok && listShards.shards) ? listShards.shards.map(s => s._id) : [];
+  if (!existing.includes("shard1rs0")) {
+    sh.addShard("shard1rs0/shard1-node1:27017,shard1-node2:27018,shard1-node3:27022");
+  } else {
+    print("shard1rs0 already added, skipping.");
+  }
+  if (!existing.includes("shard2rs0")) {
+    sh.addShard("shard2rs0/shard2-node1:27023,shard2-node2:27024,shard2-node3:27025");
+  } else {
+    print("shard2rs0 already added, skipping.");
+  }
   printjson(sh.status());
 '
 
@@ -22,14 +32,23 @@ echo "✓ Shards added successfully"
 
 echo "Enabling sharding on database and collections..."
 mongosh --host mongos:27017 --eval '
-  sh.enableSharding("restaurantes");
-  db = db.getSiblingDB("restaurantes");
-  db.products.createIndex({ productId: "hashed" });
-  sh.shardCollection("restaurantes.products", { productId: "hashed" });
-  db.reservations.createIndex({ userId: "hashed" });
-  sh.shardCollection("restaurantes.reservations", { userId: "hashed" });
-  db.menus.createIndex({ restaurantId: "hashed" });
-  sh.shardCollection("restaurantes.menus", { restaurantId: "hashed" });
+  const dbName = "restaurantes";
+  const listDatabases = db.adminCommand({ listDatabases: 1 });
+  const dbList = listDatabases.databases.map(d => d.name);
+  const isSharded = dbList.includes("restaurantes");
+  if (!isSharded) {
+    sh.enableSharding(dbName);
+    db = db.getSiblingDB(dbName);
+    db.products.createIndex({ productId: "hashed" });
+    sh.shardCollection(dbName + ".products", { productId: "hashed" });
+    db.reservations.createIndex({ userId: "hashed" });
+    sh.shardCollection(dbName + ".reservations", { userId: "hashed" });
+    db.menus.createIndex({ restaurantId: "hashed" });
+    sh.shardCollection(dbName + ".menus", { restaurantId: "hashed" });
+    print("Sharding enabled on all collections.");
+  } else {
+    print("Database already sharded, skipping.");
+  }
   printjson(sh.status());
 '
 
