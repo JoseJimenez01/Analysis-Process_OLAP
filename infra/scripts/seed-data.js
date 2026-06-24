@@ -344,7 +344,8 @@ function generateMenuProducts(menus, products, restaurantCount) {
       if (!usedProductIndices.has(prodIdx)) {
         usedProductIndices.add(prodIdx);
         results.push({
-          productIndex: prodIdx
+          productIndex: prodIdx,
+          menuIndex: m
         });
       }
     }
@@ -444,21 +445,23 @@ async function seedPostgres() {
     console.log(`Seeding menu products...`);
     let mpCount = 0;
     for (let m = 0; m < createdMenus.length; m++) {
-      const menuProductsForMenu = menuProductsData.filter(mp => {
-        // Assign products to menus based on product index range for this menu
-        const startIdx = m * 10;
-        return mp.productIndex >= startIdx && mp.productIndex < startIdx + 10 && mp.productIndex < productsData.length;
-      });
-      for (let p = 0; p < Math.min(menuProductsForMenu.length, 12); p++) {
-        const mp = menuProductsForMenu[p];
-        await prisma.menuProduct.create({
-          data: {
-            menuId: createdMenus[m].id,
-            productId: createdProducts[mp.productIndex].id,
-            displayOrder: p + 1
-          }
+      const menuProductsForMenu = menuProductsData.filter(mp => mp.menuIndex === m);
+      const usedProductIds = new Set();
+      let order = 1;
+      const batch = [];
+      for (const mp of menuProductsForMenu) {
+        const productId = createdProducts[mp.productIndex].id;
+        if (usedProductIds.has(productId)) continue;
+        usedProductIds.add(productId);
+        batch.push({
+          menuId: createdMenus[m].id,
+          productId,
+          displayOrder: order++
         });
         mpCount++;
+      }
+      if (batch.length > 0) {
+        await prisma.menuProduct.createMany({ data: batch, skipDuplicates: true });
       }
     }
 
@@ -577,18 +580,23 @@ async function seedMongo() {
   console.log(`Seeding menu products...`);
   let mpCount = 0;
   for (let m = 0; m < createdMenus.length; m++) {
-    const menuProductDocs = [];
-    for (let p = 0; p < Math.min(12, createdProducts.length); p++) {
-      const prodIdx = (m * 7 + p) % createdProducts.length;
-      menuProductDocs.push({
+    const menuProductsForMenu = menuProductsData.filter(mp => mp.menuIndex === m);
+    const usedProductIds = new Set();
+    let order = 1;
+    const docs = [];
+    for (const mp of menuProductsForMenu) {
+      const productId = createdProducts[mp.productIndex]._id;
+      if (usedProductIds.has(productId.toString())) continue;
+      usedProductIds.add(productId.toString());
+      docs.push({
         menuId: createdMenus[m]._id,
-        productId: createdProducts[prodIdx]._id,
-        displayOrder: p + 1
+        productId,
+        displayOrder: order++
       });
       mpCount++;
     }
-    if (menuProductDocs.length > 0) {
-      await MenuProduct.insertMany(menuProductDocs);
+    if (docs.length > 0) {
+      await MenuProduct.insertMany(docs);
     }
   }
 
