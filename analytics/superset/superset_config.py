@@ -8,7 +8,8 @@ SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY", "change_me_superset_123")
 ENABLE_PROXY_FIX = True
 
 # Metadata database: SQLite local (para desarrollo)
-SQLALCHEMY_DATABASE_URI = "sqlite:////app/superset.db"
+# Usamos /var/lib/superset/ que es un named volume persistente y escribible
+SQLALCHEMY_DATABASE_URI = "sqlite:////var/lib/superset/superset.db"
 
 # Cache: deshabilitado para desarrollo
 CACHE_CONFIG = {"CACHE_TYPE": "NullCache"}
