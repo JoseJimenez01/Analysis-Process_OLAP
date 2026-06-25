@@ -36,6 +36,7 @@ pids/
 .yarn/
 
 # Tooling caches
+.__pycache__/
 .cache/
 .eslintcache
 .nyc_output/

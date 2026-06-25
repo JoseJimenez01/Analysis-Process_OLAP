@@ -270,8 +270,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      sharding-setup:
-        condition: service_completed_successfully
     ports:
       - "3000"
     environment:
@@ -459,7 +457,8 @@ services:
     image: apache/superset:4.1.1
     container_name: py01_superset
     restart: unless-stopped
-    mem_limit: 1g
+    mem_limit: 2g
+    user: root
     depends_on:
       hive-server:
         condition: service_started
@@ -479,13 +478,15 @@ services:
       - bash
       - -c
       - |
-        mkdir -p /var/lib/superset
-        pip install pyhive thrift thrift-sasl --quiet 2>/dev/null
-        superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin 2>/dev/null; true
-        superset db upgrade
-        superset init 2>/dev/null; true
-        echo '=== Superset listo en http://localhost:8088 (admin/admin) ==='
-        superset run -p 8088 --host 0.0.0.0 --with-threads
+        mkdir -p /var/lib/superset && chown superset:superset /var/lib/superset
+        pip install pyhive thrift --quiet 2>/dev/null
+        echo '=== Superset iniciando (espera ~30s para first-run init) ==='
+        exec su -s /bin/bash superset -c '
+          superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin 2>/dev/null; true
+          superset db upgrade 2>&1 | grep -v "^INFO\|^WARNI"
+          superset init 2>/dev/null; true
+          exec superset run -p 8088 --host 0.0.0.0 --with-threads
+        '
 
   # ===== Airflow =====
   airflow:
@@ -512,20 +513,15 @@ services:
       - ./analytics/superset:/opt/airflow/superset
       - ./analytics/reports:/opt/airflow/reports
       - airflow_data:/opt/airflow
-    command: >
-      bash -c "
-        pip install 'pyspark==3.5.8' 'pyhive[hive]' thrift thrift-sasl --quiet 2>/dev/null &&
-        airflow db init &&
-        airflow users create
-          --username admin
-          --firstname Admin
-          --lastname User
-          --role Admin
-          --email admin@example.com
-          --password admin 2>/dev/null || true &&
-        airflow webserver & sleep 5 &&
+    command:
+      - bash
+      - -c
+      - |
+        pip install "pyspark==3.5.8" pyhive thrift --quiet
+        airflow db migrate
+        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin 2>/dev/null || true
+        airflow api-server & sleep 5
         airflow scheduler
-      "
 
 volumes:
   postgres_data:
