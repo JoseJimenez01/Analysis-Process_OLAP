@@ -89,6 +89,12 @@ def build_spark(app_name: str, hive_support: bool = False) -> SparkSession:
         .config("spark.sql.adaptive.enabled", "true") \
         .config("spark.sql.adaptive.coalescePartitions.enabled", "true")
 
+    if hive_support:
+        # Evita que Spark genere VARCHAR(2147483647) al escribir en Hive;
+        # Hive 4.x rechaza longitudes > 65535.
+        builder = builder \
+            .config("spark.sql.hive.convertMetastoreParquet", "false")
+
     return builder.getOrCreate()
 
 

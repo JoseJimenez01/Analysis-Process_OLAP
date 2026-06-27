@@ -40,21 +40,14 @@ def load_staging(spark, table: str):
     return spark.read.parquet(path)
 
 
-def write_report(filename: str, content: str):
+def write_report_csv(filename: str, content: str):
     """
-    Persiste un reporte de texto en analytics/reports/.
-    Cada archivo incluye un timestamp de generación.
+    Persiste un reporte CSV en analytics/reports/.
     """
     os.makedirs(REPORTS_PATH, exist_ok=True)
     filepath = f"{REPORTS_PATH}/{filename}"
-    header = (
-        f"========================================\n"
-        f"  Reporte: {filename}\n"
-        f"  Generado: {datetime.now(timezone.utc).isoformat()}\n"
-        f"========================================\n\n"
-    )
     with open(filepath, "w", encoding="utf-8") as f:
-        f.write(header + content)
+        f.write(content)
     print(f"  [REPORTE] Guardado: {filepath}")
 
 
@@ -90,8 +83,11 @@ def analyze_consumption_trends(spark):
         GROUP BY status
         ORDER BY total DESC
     """)
-    status_dist_str = "DISTRIBUCIÓN DE ESTADOS DE RESERVA\n" + \
-        df_status_dist.toPandas().to_string(index=False)
+    pdf_status = df_status_dist.toPandas()
+    pdf_status.to_csv(f"{REPORTS_PATH}/tendencias_estados.csv", index=False)
+    status_dist_str = "seccion,status,total,pct\n" + \
+        "\n".join(f"distribucion_estados,{r['status']},{r['total']},{r['pct']}"
+                  for _, r in pdf_status.iterrows())
 
     # ── b) Tamaño promedio de grupo por restaurante ──
     df_avg_party = spark.sql("""
@@ -103,8 +99,11 @@ def analyze_consumption_trends(spark):
         GROUP BY restaurant_name
         ORDER BY total_reservations DESC
     """)
-    avg_party_str = "\n\nTAMAÑO PROMEDIO DE GRUPO POR RESTAURANTE\n" + \
-        df_avg_party.toPandas().to_string(index=False)
+    pdf_party = df_avg_party.toPandas()
+    pdf_party.to_csv(f"{REPORTS_PATH}/tendencias_avg_party.csv", index=False)
+    avg_party_str = "\n\nseccion,restaurant_name,avg_party_size,total_reservations\n" + \
+        "\n".join(f"avg_party_rest,{r['restaurant_name']},{r['avg_party_size']},{r['total_reservations']}"
+                  for _, r in pdf_party.iterrows())
 
     # ── c) Categorías más ofertadas en menús ──
     df_cat_offering = spark.sql("""
@@ -117,8 +116,11 @@ def analyze_consumption_trends(spark):
         GROUP BY category_name
         ORDER BY total_occurrences DESC
     """)
-    cat_offering_str = "\n\nCATEGORÍAS MÁS OFERTADAS EN MENÚS\n" + \
-        df_cat_offering.toPandas().to_string(index=False)
+    pdf_cat = df_cat_offering.toPandas()
+    pdf_cat.to_csv(f"{REPORTS_PATH}/tendencias_categorias.csv", index=False)
+    cat_offering_str = "\n\nseccion,category_name,total_menus,total_occurrences,avg_price\n" + \
+        "\n".join(f"cat_ofertadas,{r['category_name']},{r['total_menus']},{r['total_occurrences']},{r['avg_price']}"
+                  for _, r in pdf_cat.iterrows())
 
     # ── d) Ranking de restaurantes por volumen ──
     df_ranking = spark.sql("""
@@ -133,8 +135,11 @@ def analyze_consumption_trends(spark):
         GROUP BY restaurant_name
         ORDER BY total_reservations DESC
     """)
-    ranking_str = "\n\nRANKING DE RESTAURANTES POR VOLUMEN\n" + \
-        df_ranking.toPandas().to_string(index=False)
+    pdf_rank = df_ranking.toPandas()
+    pdf_rank.to_csv(f"{REPORTS_PATH}/tendencias_ranking.csv", index=False)
+    ranking_str = "\n\nseccion,restaurant_name,total_reservations,avg_party,completion_rate_pct\n" + \
+        "\n".join(f"ranking_rest,{r['restaurant_name']},{r['total_reservations']},{r['avg_party']},{r['completion_rate_pct']}"
+                  for _, r in pdf_rank.iterrows())
 
     return status_dist_str + avg_party_str + cat_offering_str + ranking_str
 
@@ -176,8 +181,11 @@ def analyze_peak_hours(spark):
         GROUP BY hour_of_day
         ORDER BY hour_of_day
     """)
-    by_hour_str = "DISTRIBUCIÓN DE RESERVAS POR HORA DEL DÍA\n" + \
-        df_by_hour.toPandas().to_string(index=False)
+    pdf_hour = df_by_hour.toPandas()
+    pdf_hour.to_csv(f"{REPORTS_PATH}/horarios_por_hora.csv", index=False)
+    by_hour_str = "seccion,hour_of_day,total_reservations,avg_party,pct\n" + \
+        "\n".join(f"por_hora,{r['hour_of_day']},{r['total_reservations']},{r['avg_party']},{r['pct']}"
+                  for _, r in pdf_hour.iterrows())
 
     # ── b) Distribución por día de la semana ──
     day_names = {0: "Dom", 1: "Lun", 2: "Mar", 3: "Mié",
@@ -192,10 +200,13 @@ def analyze_peak_hours(spark):
         GROUP BY day_of_week
         ORDER BY day_of_week
     """)
-    pdf = df_by_dow.toPandas()
-    pdf["day_name"] = pdf["day_of_week"].map(day_names)
-    by_dow_str = "\n\nDISTRIBUCIÓN POR DÍA DE LA SEMANA\n" + \
-        pdf[["day_name", "total_reservations", "avg_party"]].to_string(index=False)
+    pdf_dow = df_by_dow.toPandas()
+    pdf_dow["day_name"] = pdf_dow["day_of_week"].map(day_names)
+    pdf_dow[["day_name", "total_reservations", "avg_party"]].to_csv(
+        f"{REPORTS_PATH}/horarios_por_dia.csv", index=False)
+    by_dow_str = "\n\nseccion,day_name,total_reservations,avg_party\n" + \
+        "\n".join(f"por_dia,{r['day_name']},{r['total_reservations']},{r['avg_party']}"
+                  for _, r in pdf_dow.iterrows())
 
     # ── c) Ventana pico (hora + día combinados) ──
     df_peak = spark.sql("""
@@ -210,8 +221,11 @@ def analyze_peak_hours(spark):
     """)
     pdf_peak = df_peak.toPandas()
     pdf_peak["day_name"] = pdf_peak["day_of_week"].map(day_names)
-    peak_str = "\n\nTOP 15 VENTANAS PICO (DÍA × HORA)\n" + \
-        pdf_peak[["day_name", "hour_of_day", "total_reservations"]].to_string(index=False)
+    pdf_peak[["day_name", "hour_of_day", "total_reservations"]].to_csv(
+        f"{REPORTS_PATH}/horarios_ventanas_pico.csv", index=False)
+    peak_str = "\n\nseccion,day_name,hour_of_day,total_reservations\n" + \
+        "\n".join(f"ventana_pico,{r['day_name']},{r['hour_of_day']},{r['total_reservations']}"
+                  for _, r in pdf_peak.iterrows())
 
     return by_hour_str + by_dow_str + peak_str
 
@@ -265,9 +279,11 @@ def analyze_monthly_growth(spark):
         ORDER BY year, month
     """)
 
-    pdf = df_growth.toPandas()
-    monthly_str = "CRECIMIENTO MENSUAL DE RESERVAS\n" + \
-        pdf.to_string(index=False)
+    pdf_growth = df_growth.toPandas()
+    pdf_growth.to_csv(f"{REPORTS_PATH}/crecimiento_mensual.csv", index=False)
+    monthly_str = "seccion,year,month,total_reservations,total_guests,prev_month_reservations,growth_pct,moving_avg_3m\n" + \
+        "\n".join(f"crecimiento_mensual,{r['year']},{r['month']},{r['total_reservations']},{r['total_guests']},{r['prev_month_reservations']},{r['growth_pct']},{r['moving_avg_3m']}"
+                  for _, r in pdf_growth.iterrows())
 
     return monthly_str
 
@@ -286,24 +302,24 @@ def main():
     # ─── Reporte 1: Tendencias de consumo ────────────────────────────────
     print("\n--- Reporte: Tendencias de Consumo ---")
     consumo = analyze_consumption_trends(spark)
-    write_report(
-        "analisis_tendencias_consumo.txt",
+    write_report_csv(
+        "analisis_tendencias_consumo.csv",
         consumo
     )
 
     # ─── Reporte 2: Horarios pico ────────────────────────────────────────
     print("\n--- Reporte: Horarios Pico ---")
     picos = analyze_peak_hours(spark)
-    write_report(
-        "analisis_horarios_pico.txt",
+    write_report_csv(
+        "analisis_horarios_pico.csv",
         picos
     )
 
     # ─── Reporte 3: Crecimiento mensual ──────────────────────────────────
     print("\n--- Reporte: Crecimiento Mensual ---")
     crecimiento = analyze_monthly_growth(spark)
-    write_report(
-        "analisis_crecimiento_mensual.txt",
+    write_report_csv(
+        "analisis_crecimiento_mensual.csv",
         crecimiento
     )
 

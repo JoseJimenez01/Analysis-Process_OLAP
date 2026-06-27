@@ -1,0 +1,14 @@
+seccion,year,month,total_reservations,total_guests,prev_month_reservations,growth_pct,moving_avg_3m
+crecimiento_mensual,2024.0,6.0,210.0,1370.0,nan,nan,210.0
+crecimiento_mensual,2024.0,7.0,195.0,1273.0,210.0,-7.14,202.5
+crecimiento_mensual,2024.0,8.0,219.0,1369.0,195.0,12.31,208.0
+crecimiento_mensual,2024.0,9.0,212.0,1390.0,219.0,-3.2,208.7
+crecimiento_mensual,2024.0,10.0,194.0,1296.0,212.0,-8.49,208.3
+crecimiento_mensual,2024.0,11.0,214.0,1397.0,194.0,10.31,206.7
+crecimiento_mensual,2024.0,12.0,213.0,1489.0,214.0,-0.47,207.0
+crecimiento_mensual,2025.0,1.0,210.0,1332.0,213.0,-1.41,212.3
+crecimiento_mensual,2025.0,2.0,188.0,1169.0,210.0,-10.48,203.7
+crecimiento_mensual,2025.0,3.0,216.0,1365.0,188.0,14.89,204.7
+crecimiento_mensual,2025.0,4.0,207.0,1378.0,216.0,-4.17,203.7
+crecimiento_mensual,2025.0,5.0,213.0,1346.0,207.0,2.9,212.0
+crecimiento_mensual,2025.0,6.0,9.0,72.0,213.0,-95.77,143.0

@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 logging.basicConfig(level=logging.INFO, format="[REPORT] %(message)s")
 log = logging.getLogger(__name__)
 
-REPORTS_DIR = "/app/reports"
+REPORTS_DIR = "/opt/airflow/reports"
 
 # ─── Conexión a Hive via PyHive ────────────────────────────────────────────
 

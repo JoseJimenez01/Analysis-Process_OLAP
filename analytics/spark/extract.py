@@ -60,9 +60,9 @@ RESERVATIONS_QUERY = """
         rest.address      AS restaurant_address,
         rest.phone        AS restaurant_phone,
         rest.rating       AS restaurant_rating
-    FROM reservation r
-    JOIN "user" u ON r.user_id = u.id
-    JOIN restaurant rest ON r.restaurant_id = rest.id
+    FROM "Reservation" r
+    JOIN "User" u ON r.user_id = u.id
+    JOIN "Restaurant" rest ON r.restaurant_id = rest.id
 """
 
 PRODUCTS_QUERY = """
@@ -78,8 +78,8 @@ PRODUCTS_QUERY = """
         c.name            AS category_name,
         c.description     AS category_description,
         c.icon            AS category_icon
-    FROM product p
-    JOIN category c ON p.category_id = c.id
+    FROM "Product" p
+    JOIN "Category" c ON p.category_id = c.id
 """
 
 MENUS_QUERY = """
@@ -91,8 +91,8 @@ MENUS_QUERY = """
         m.created_at      AS menu_created_at,
         rest.id           AS restaurant_id,
         rest.name         AS restaurant_name
-    FROM menu m
-    JOIN restaurant rest ON m.restaurant_id = rest.id
+    FROM "Menu" m
+    JOIN "Restaurant" rest ON m.restaurant_id = rest.id
 """
 
 MENU_PRODUCTS_QUERY = """
@@ -106,20 +106,20 @@ MENU_PRODUCTS_QUERY = """
         p.price           AS product_price,
         c.id              AS category_id,
         c.name            AS category_name
-    FROM menu_product mp
-    JOIN menu m ON mp.menu_id = m.id
-    JOIN product p ON mp.product_id = p.id
-    JOIN category c ON p.category_id = c.id
+    FROM "MenuProduct" mp
+    JOIN "Menu" m ON mp.menu_id = m.id
+    JOIN "Product" p ON mp.product_id = p.id
+    JOIN "Category" c ON p.category_id = c.id
 """
 
 USERS_QUERY = """
     SELECT id, name, email, role, created_at
-    FROM "user"
+    FROM "User"
 """
 
 RESTAURANTS_QUERY = """
     SELECT id, name, address, phone, description, rating, created_at
-    FROM restaurant
+    FROM "Restaurant"
 """
 
 
@@ -154,15 +154,18 @@ def extract_table(
         .option("driver", JDBC_DRIVER) \
         .option("user", JDBC_USER) \
         .option("password", JDBC_PASSWORD) \
-        .option("query", query) \
         .option("fetchSize", "10000")  # filas por viaje JDBC (batch)
 
     if partition_col:
         reader = reader \
+            .option("dbtable", f"({query}) as t") \
             .option("partitionColumn", partition_col) \
             .option("lowerBound", str(lower_bound)) \
             .option("upperBound", str(upper_bound)) \
             .option("numPartitions", str(num_partitions))
+    else:
+        reader = reader \
+            .option("query", query)
 
     df = reader.load()
     count = df.count()

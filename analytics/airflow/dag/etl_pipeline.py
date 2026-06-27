@@ -1,12 +1,15 @@
 """
-DAG — ETL Pipeline: Extract → Transform → Load → Reindex → Export
+DAG — ETL Pipeline: Extract → Transform → Load → Superset Init →
+                    Create Dashboards → Export
 
 Propósito:
-  Orquestar el pipeline ETL completo del Data Warehouse + exportación de
-  reportes CSV. Se ejecuta diariamente a las 02:00 AM.
+  Orquestar el pipeline ETL completo del Data Warehouse + inicialización
+  automática de Superset (conexiones, dashboards) + exportación de reportes
+  CSV. Se ejecuta diariamente a las 02:00 AM.
 
 Dependencia entre tareas:
-  extract >> transform >> load >> reindex >> export_reports
+  extract >> transform >> load >> init_superset >>
+  create_dashboards >> export_reports
 
 Cada tarea se ejecuta en modo bloqueante para garantizar consistencia.
 
@@ -34,12 +37,12 @@ default_args = {
 with DAG(
     dag_id="etl_pipeline",
     description="Pipeline ETL: Extraer datos desde PostgreSQL, transformar, "
-                "cargar en Hive y reindexar en Elasticsearch.",
+                "cargar en Hive y exportar reportes.",
     default_args=default_args,
     schedule="0 2 * * *",  # 02:00 AM todos los días
     start_date=datetime(2025, 1, 1),
     catchup=False,
-    tags=["etl", "spark", "hive", "elasticsearch"],
+    tags=["etl", "spark", "hive"],
 ) as dag:
 
     # ─── Fase 1: Extract ────────────────────────────────────────────────
@@ -47,7 +50,8 @@ with DAG(
     extract = BashOperator(
         task_id="extract",
         bash_command=(
-            "spark-submit --master spark://spark-master:7077 "
+            "spark-submit --master local[1] "
+            "--conf spark.driver.memory=512m "
             "--packages org.postgresql:postgresql:42.7.1 "
             "/opt/airflow/spark/extract.py"
         ),
@@ -58,7 +62,8 @@ with DAG(
     transform = BashOperator(
         task_id="transform",
         bash_command=(
-            "spark-submit --master spark://spark-master:7077 "
+            "spark-submit --master local[1] "
+            "--conf spark.driver.memory=512m "
             "/opt/airflow/spark/transform.py"
         ),
     )
@@ -68,29 +73,33 @@ with DAG(
     load = BashOperator(
         task_id="load",
         bash_command=(
-            "spark-submit --master spark://spark-master:7077 "
+            "spark-submit --master local[1] "
+            "--conf spark.driver.memory=512m "
             "/opt/airflow/spark/load.py"
         ),
     )
 
-    # ─── Fase 4: Reindex ────────────────────────────────────────────────
-    # Sincroniza el catálogo de productos con Elasticsearch.
-    reindex = BashOperator(
-        task_id="reindex",
-        bash_command=(
-            "spark-submit --master spark://spark-master:7077 "
-            "--packages org.postgresql:postgresql:42.7.1,"
-            "org.elasticsearch:elasticsearch-spark-30_2.12:8.15.5 "
-            "/opt/airflow/spark/reindex.py"
-        ),
+    # ─── Fase 4: Init Superset ────────────────────────────────────────────
+    # Registra conexiones a bases de datos (Hive) en Superset via REST API.
+    init_superset = BashOperator(
+        task_id="init_superset",
+        bash_command="python /opt/airflow/superset/init_superset.py",
     )
 
-    # ─── Fase 5: Export reportes CSV ────────────────────────────────────
-    # Conecta a Hive via PyHive y genera los 3 CSVs de análisis.
+    # ─── Fase 5: Create dashboards en Superset ───────────────────────────
+    # Crea datasets virtuales, charts y un dashboard con los 3 análisis OLAP.
+    create_dashboards = BashOperator(
+        task_id="create_dashboards",
+        bash_command="python /opt/airflow/superset/create_dashboards.py",
+    )
+
+    # ─── Fase 6: Export reportes CSV ────────────────────────────────────
+    # Lee desde PostgreSQL (bypassea Hive/Spark, Airflow no tiene Java) y
+    # genera los 3 CSVs de análisis. Reemplaza la versión Hive (caída por OOM).
     export_reports = BashOperator(
         task_id="export_reports",
-        bash_command="python /opt/airflow/superset/export_reports.py",
+        bash_command="python /opt/airflow/superset/export_reports_pg.py",
     )
 
     # ─── Orden de ejecución ─────────────────────────────────────────────
-    extract >> transform >> load >> reindex >> export_reports
+    extract >> transform >> load >> init_superset >> create_dashboards >> export_reports

@@ -240,11 +240,10 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.5
     container_name: py01_elasticsearch
     restart: unless-stopped
-    mem_limit: 1g
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms384m -Xmx384m
     ports:
       - "9200:9200"
     volumes:
@@ -255,6 +254,20 @@ services:
       timeout: 10s
       retries: 15
       start_period: 300s
+
+  # ===== Neo4j =====
+  neo4j:
+    image: neo4j:4.4-community
+    container_name: py01_neo4j
+    restart: unless-stopped
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_dbms_memory_heap_max__size=256M
+    ports:
+      - "7687:7687"   # Bolt
+      - "7474:7474"   # Browser UI
+    volumes:
+      - neo4j_data:/data
 
   # ===== API Service =====
   api:
@@ -344,27 +357,22 @@ services:
       POSTGRES_DATABASE: metastore_db
       POSTGRES_USER: hive
       POSTGRES_PASSWORD: hive
+      HADOOP_CLIENT_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC"
+      SERVICE_OPTS: "-Xmx256m"
+      IS_RESUME: "false"
+      HIVE_VER: "4.0.0"
     entrypoint: ["/bin/bash", "-c"]
-    command: |
-      set -e
-      echo "=== Hive Schema Init ==="
-      sed -i '/statement_timeout/d' /opt/hive/scripts/schema/hive-schema-4.0.0.postgres.sql 2>/dev/null || true
-      sed -i '/statement_timeout/d' /opt/hive/scripts/schema/hive-upgrade-postgres.sql 2>/dev/null || true
-      if /opt/hive/bin/schematool -dbType postgres -info 2>&1 | grep -qi "schema version"; then
-        echo "Schema already initialized, running upgrade..."
-        /opt/hive/bin/schematool -dbType postgres -upgradeSchema || true
-      else
-        echo "Initializing schema..."
-        /opt/hive/bin/schematool -dbType postgres -initSchema
-      fi
-      echo "=== Schema init complete ==="
+    command: ["find /opt/hive/scripts -name '*.postgres.sql' -exec sed -i '/statement_timeout/d' {} + 2>/dev/null; exec /entrypoint.sh"]
+    volumes:
+      - ./analytics/warehouse/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
+      - ./analytics/warehouse/hive-env.sh:/opt/hive/conf/hive-env.sh:ro
+      - ./analytics/warehouse/lib/postgresql-42.7.1.jar:/opt/hive/lib/postgresql-42.7.1.jar:ro
 
   # ===== Hive Metastore (Thrift interface on 9083) =====
   hive-metastore:
     image: apache/hive:4.0.0
     container_name: py01_hive_metastore
     restart: unless-stopped
-    mem_limit: 512m
     depends_on:
       hive-schema-init:
         condition: service_completed_successfully
@@ -375,9 +383,15 @@ services:
       POSTGRES_DATABASE: metastore_db
       POSTGRES_USER: hive
       POSTGRES_PASSWORD: hive
-      SKIP_SCHEMA_INIT: "true"
+      IS_RESUME: "true"
+      HADOOP_CLIENT_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC"
+      SERVICE_OPTS: "-Xmx256m"
     ports:
       - "9083:9083"
+    volumes:
+      - ./analytics/warehouse/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
+      - ./analytics/warehouse/hive-env.sh:/opt/hive/conf/hive-env.sh:ro
+      - ./analytics/warehouse/lib/postgresql-42.7.1.jar:/opt/hive/lib/postgresql-42.7.1.jar:ro
     healthcheck:
       disable: true
 
@@ -386,7 +400,6 @@ services:
     image: apache/hive:4.0.0
     container_name: py01_hive_server
     restart: unless-stopped
-    mem_limit: 1g
     depends_on:
       hive-metastore:
         condition: service_started
@@ -398,11 +411,17 @@ services:
       POSTGRES_USER: hive
       POSTGRES_PASSWORD: hive
       HIVE_METASTORE_HOST: hive-metastore
+      IS_RESUME: "true"
+      HADOOP_CLIENT_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC"
+      SERVICE_OPTS: "-Xmx256m"
     ports:
       - "10000:10000"
       - "10002:10002"
     volumes:
       - ./analytics/warehouse:/warehouse
+      - ./analytics/warehouse/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
+      - ./analytics/warehouse/hive-env.sh:/opt/hive/conf/hive-env.sh:ro
+      - ./analytics/warehouse/lib/postgresql-42.7.1.jar:/opt/hive/lib/postgresql-42.7.1.jar:ro
     healthcheck:
       disable: true
 
@@ -411,15 +430,13 @@ services:
     image: spark:3.5.8-python3
     container_name: py01_spark_master
     restart: unless-stopped
-    mem_limit: 1g
+    mem_limit: 2g
     user: root
     ports:
       - "7077:7077"
       - "8081:8080"        # Spark Master Web UI (8081 host → 8080 container, 8080 es de Airflow)
     volumes:
-      - ./analytics/spark:/opt/spark/analytics
-      - ./analytics/reports:/opt/spark/reports
-      - ./analytics/warehouse:/opt/spark/warehouse
+      - ./analytics/warehouse:/warehouse
     command:
       - bash
       - -c
@@ -434,17 +451,18 @@ services:
     image: spark:3.5.8-python3
     container_name: py01_spark_worker
     restart: unless-stopped
-    mem_limit: 2g
+    mem_limit: 4g
     user: root
     depends_on:
       - spark-master
     environment:
       SPARK_WORKER_CORES: 1
-      SPARK_WORKER_MEMORY: 1g
+      SPARK_WORKER_MEMORY: 2g
+      ANALYTICS_ROOT: /opt/airflow
     volumes:
-      - ./analytics/spark:/opt/spark/analytics
-      - ./analytics/reports:/opt/spark/reports
-      - ./analytics/warehouse:/opt/spark/warehouse
+      - ./analytics/spark:/opt/airflow/spark
+      - ./analytics/reports:/opt/airflow/reports
+      - ./analytics/warehouse:/warehouse
     command:
       - bash
       - -c
@@ -479,7 +497,7 @@ services:
       - -c
       - |
         mkdir -p /var/lib/superset && chown superset:superset /var/lib/superset
-        pip install pyhive thrift --quiet 2>/dev/null
+        pip install pyhive thrift psycopg2-binary --quiet 2>/dev/null
         echo '=== Superset iniciando (espera ~30s para first-run init) ==='
         exec su -s /bin/bash superset -c '
           superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin 2>/dev/null; true
@@ -490,28 +508,34 @@ services:
 
   # ===== Airflow =====
   airflow:
-    image: apache/airflow:3.2.2
+    build: ./analytics/airflow
     container_name: py01_airflow
     restart: unless-stopped
-    mem_limit: 1g
+    mem_limit: 3g
     depends_on:
-      - spark-master
+      postgres:
+        condition: service_healthy
+      spark-master:
+        condition: service_started
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__PARALLELISM=2
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
       - AIRFLOW__WEBSERVER__RBAC=True
       - AIRFLOW_ADMIN_USER=admin
       - AIRFLOW_ADMIN_PASSWORD=admin
       - AIRFLOW__CORE__FERNET_KEY=
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgres:5432/airflow
+      - ANALYTICS_ROOT=/opt/airflow
     ports:
-      - "8080:8080"        # Airflow Web UI
+      - "8080:8080"        # Airflow Web UI (api-server)
     volumes:
       - ./analytics/airflow/dag:/opt/airflow/dags
       - ./analytics/spark:/opt/airflow/spark
       - ./analytics/superset:/opt/airflow/superset
       - ./analytics/reports:/opt/airflow/reports
+      - ./analytics/warehouse:/warehouse
       - airflow_data:/opt/airflow
     command:
       - bash
@@ -520,8 +544,26 @@ services:
         pip install "pyspark==3.5.8" pyhive thrift --quiet
         airflow db migrate
         airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin 2>/dev/null || true
-        airflow api-server & sleep 5
-        airflow scheduler
+        # Start all Airflow components manually
+        # 1. Api-server (execution-only); restart on crash
+        restart_api() {
+          while true; do
+            airflow api-server --port 8080 --apps execution >> /opt/airflow/api-server.log 2>&1
+            sleep 2
+          done
+        }
+        restart_api &
+        # 2. Scheduler
+        nohup airflow scheduler > /opt/airflow/scheduler.log 2>&1 &
+        sleep 2
+        # 3. Triggerer
+        nohup airflow triggerer > /opt/airflow/triggerer.log 2>&1 &
+        sleep 2
+        # 4. Dag-processor
+        nohup airflow dag-processor > /opt/airflow/dag-processor.log 2>&1 &
+        echo "All Airflow components started"
+        # Keep container alive; signals are forwarded by dumb-init to process group
+        wait
 
 volumes:
   postgres_data:
@@ -536,5 +578,6 @@ volumes:
   shard2_node3_data:
   es_data:
   hive_metastore_data:
+  neo4j_data:
   airflow_data:
   superset_data:

@@ -1,0 +1,86 @@
+seccion,status,total,pct
+distribucion_estados,confirmed,842,33.68
+distribucion_estados,completed,830,33.20
+distribucion_estados,pending,425,17.00
+distribucion_estados,cancelled,403,16.12
+
+seccion,restaurant_name,avg_party_size,total_reservations
+avg_party_rest,Sabores del Pueblo,7.0,84
+avg_party_rest,La Mesa Colonial,6.6,84
+avg_party_rest,San Rústico,6.1,84
+avg_party_rest,Fonda del Chef,6.5,84
+avg_party_rest,San Dorado,5.8,84
+avg_party_rest,Taberna de la Luna,6.6,84
+avg_party_rest,La Mesa Nuevo,7.1,84
+avg_party_rest,Los Moderno,6.0,84
+avg_party_rest,Los del Valle,5.9,84
+avg_party_rest,La Mesa del Lago,6.3,84
+avg_party_rest,El Sazón Rústico,6.3,83
+avg_party_rest,La Mesa del Bosque,6.5,83
+avg_party_rest,Taberna Verde,6.7,83
+avg_party_rest,de Doña María Grill,6.6,83
+avg_party_rest,Taberna del Volcán,7.2,83
+avg_party_rest,Cantina Verde,6.5,83
+avg_party_rest,Fonda Maya,6.3,83
+avg_party_rest,San del Pueblo,6.4,83
+avg_party_rest,La Mesa de Doña María,6.4,83
+avg_party_rest,del Chef Express,6.7,83
+avg_party_rest,Imperial Café,7.1,83
+avg_party_rest,Cantina Dorado,6.7,83
+avg_party_rest,Sabores Imperial,6.1,83
+avg_party_rest,Parrilla del Sol,6.5,83
+avg_party_rest,Chapín Bistro,6.6,83
+avg_party_rest,Doña Dorado,6.4,83
+avg_party_rest,La Casa del Chef,6.5,83
+avg_party_rest,del Volcán Bistro,6.8,83
+avg_party_rest,del Chef Café,6.4,83
+avg_party_rest,Don del Camino,6.4,83
+
+seccion,category_name,total_menus,total_occurrences,avg_price
+cat_ofertadas,Mariscos,111,111,118.60
+cat_ofertadas,Postres,111,111,115.15
+cat_ofertadas,Entradas,111,111,114.92
+cat_ofertadas,Platos Fuertes,111,111,114.86
+cat_ofertadas,Pastas,111,111,114.21
+cat_ofertadas,Bebidas,103,103,104.67
+cat_ofertadas,Pizzas,93,93,132.12
+cat_ofertadas,Ensaladas,82,82,112.93
+cat_ofertadas,Tapas,73,73,127.84
+cat_ofertadas,Desayunos,64,64,130.92
+cat_ofertadas,Sopas,49,49,114.22
+cat_ofertadas,Sándwiches,41,41,120.45
+cat_ofertadas,Carnes,27,27,126.70
+cat_ofertadas,Vegetariano,17,17,121.21
+cat_ofertadas,Coctelería,8,8,124.83
+
+seccion,restaurant_name,total_reservations,avg_party,completion_rate_pct
+ranking_rest,Sabores del Pueblo,84,7.0,45.2
+ranking_rest,La Mesa Colonial,84,6.6,31.0
+ranking_rest,San Rústico,84,6.1,34.5
+ranking_rest,Fonda del Chef,84,6.5,27.4
+ranking_rest,San Dorado,84,5.8,31.0
+ranking_rest,Taberna de la Luna,84,6.6,27.4
+ranking_rest,La Mesa Nuevo,84,7.1,33.3
+ranking_rest,Los Moderno,84,6.0,29.8
+ranking_rest,Los del Valle,84,5.9,32.1
+ranking_rest,La Mesa del Lago,84,6.3,32.1
+ranking_rest,El Sazón Rústico,83,6.3,34.9
+ranking_rest,La Mesa del Bosque,83,6.5,36.1
+ranking_rest,Taberna Verde,83,6.7,30.1
+ranking_rest,de Doña María Grill,83,6.6,28.9
+ranking_rest,Taberna del Volcán,83,7.2,32.5
+ranking_rest,Cantina Verde,83,6.5,33.7
+ranking_rest,Fonda Maya,83,6.3,38.6
+ranking_rest,San del Pueblo,83,6.4,38.6
+ranking_rest,La Mesa de Doña María,83,6.4,28.9
+ranking_rest,del Chef Express,83,6.7,41.0
+ranking_rest,Imperial Café,83,7.1,37.3
+ranking_rest,Cantina Dorado,83,6.7,54.2
+ranking_rest,Sabores Imperial,83,6.1,30.1
+ranking_rest,Parrilla del Sol,83,6.5,24.1
+ranking_rest,Chapín Bistro,83,6.6,27.7
+ranking_rest,Doña Dorado,83,6.4,32.5
+ranking_rest,La Casa del Chef,83,6.5,30.1
+ranking_rest,del Volcán Bistro,83,6.8,31.3
+ranking_rest,del Chef Café,83,6.4,34.9
+ranking_rest,Don del Camino,83,6.4,26.5

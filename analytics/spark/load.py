@@ -29,14 +29,20 @@ from pyspark.sql.types import NumericType
 
 # ─── Función de carga: staging → Hive ───────────────────────────────────────
 
+WAREHOUSE_PATH = "/warehouse"
+
+
 def load_dimension(spark, table: str, hive_table: str):
     """
-    Lee desde staging Parquet y escribe en una tabla Hive (dimensión),
-    sobrescribiendo el contenido anterior.
+    Lee desde staging Parquet y escribe en /warehouse/{hive_table}
+    como archivos Parquet (sin registro en Hive metastore para evitar
+    incompatibilidades Hive 4.x con VARCHAR(2147483647)).
     """
-    print(f"\n  [LOAD] Cargando dim_{hive_table}...")
+    from spark.utils import REPORTS_PATH
+    path = f"{WAREHOUSE_PATH}/{hive_table}"
+    print(f"\n  [LOAD] Cargando {hive_table} → {path}...")
     df = spark.read.parquet(f"{STAGING_PATH}/{execution_date_path()}/{table}")
-    df.write.mode("overwrite").saveAsTable(hive_table)
+    df.write.mode("overwrite").parquet(path)
     count = df.count()
     print(f"    ✓ {count} filas cargadas en {hive_table}")
     return count
@@ -44,12 +50,13 @@ def load_dimension(spark, table: str, hive_table: str):
 
 def load_fact(spark, table: str, hive_table: str):
     """
-    Lee desde staging Parquet y escribe en una tabla Hive (hecho),
-    en modo append (acumulativo) o overwrite (carga completa).
+    Lee desde staging Parquet y escribe en /warehouse/{hive_table}
+    como archivos Parquet.
     """
-    print(f"\n  [LOAD] Cargando {hive_table}...")
+    path = f"{WAREHOUSE_PATH}/{hive_table}"
+    print(f"\n  [LOAD] Cargando {hive_table} → {path}...")
     df = spark.read.parquet(f"{STAGING_PATH}/{execution_date_path()}/{table}")
-    df.write.mode("overwrite").saveAsTable(hive_table)
+    df.write.mode("overwrite").parquet(path)
     count = df.count()
     print(f"    ✓ {count} filas cargadas en {hive_table}")
     return count
@@ -71,19 +78,22 @@ def validate_integrity(spark) -> list:
         print(msg)
         results.append(msg)
 
+    def parquet_table(name: str):
+        return spark.read.parquet(f"{WAREHOUSE_PATH}/{name}")
+
     # ── 1. Conteo de filas en cada tabla ─────────────────────────────────
     for tbl in ["dim_user", "dim_restaurant", "dim_category",
                 "dim_product", "dim_status", "dim_date",
                 "fact_reservation", "fact_menu_composition"]:
         try:
-            cnt = spark.table(tbl).count()
+            cnt = parquet_table(tbl).count()
             check(f"{tbl}: {cnt} filas", cnt >= 0, f"registradas: {cnt}")
         except Exception as e:
             check(f"{tbl}: no accesible", False, str(e))
 
     # ── 2. Nulos en columnas clave de fact_reservation ───────────────────
     try:
-        fact = spark.table("fact_reservation")
+        fact = parquet_table("fact_reservation")
         total = fact.count()
         for col_name in ["reservation_id", "date_id", "user_id",
                          "restaurant_id", "status_id"]:
@@ -107,7 +117,7 @@ def validate_integrity(spark) -> list:
     # ── 4. Estado de reserva debe existir en dim_status ──────────────────
     try:
         status_ids = [r.status_id for r in
-                      spark.table("dim_status").select("status_id").distinct().collect()]
+                      parquet_table("dim_status").select("status_id").distinct().collect()]
         orphan = fact.filter(
             ~col("status_id").isin(status_ids)
         ).count()
@@ -118,7 +128,7 @@ def validate_integrity(spark) -> list:
 
     # ── 5. Precio de producto no negativo ────────────────────────────────
     try:
-        neg_price = spark.table("dim_product").filter(
+        neg_price = parquet_table("dim_product").filter(
             col("price") < 0
         ).count()
         check("Precios no negativos", neg_price == 0,
@@ -154,8 +164,8 @@ def main():
     print("ETL — LOAD: Cargando datos al Data Warehouse")
     print("=" * 60)
 
-    # Spark con soporte Hive para leer/escribir tablas del metastore
-    spark = build_spark("ETL Load", hive_support=True)
+    # Spark sin Hive (escribimos Parquet directamente en /warehouse)
+    spark = build_spark("ETL Load", hive_support=False)
 
     staging_root = f"{STAGING_PATH}/{execution_date_path()}"
     print(f"  Leyendo staging: {staging_root}")
@@ -178,7 +188,7 @@ def main():
         col("category_name").alias("name"),
         col("category_description").alias("description")
     ).distinct()
-    df_cats.write.mode("overwrite").saveAsTable("dim_category")
+    df_cats.write.mode("overwrite").parquet(f"{WAREHOUSE_PATH}/dim_category")
     print(f"    ✓ {df_cats.count()} filas cargadas en dim_category")
 
     # dim_status: valores estáticos
@@ -188,7 +198,7 @@ def main():
         (3, "cancelled"), (4, "completed")
     ]
     df_status = spark.createDataFrame(status_data, ["status_id", "status_name"])
-    df_status.write.mode("overwrite").saveAsTable("dim_status")
+    df_status.write.mode("overwrite").parquet(f"{WAREHOUSE_PATH}/dim_status")
     print(f"    ✓ {df_status.count()} filas cargadas en dim_status")
 
     # ─── Carga de hechos ─────────────────────────────────────────────────

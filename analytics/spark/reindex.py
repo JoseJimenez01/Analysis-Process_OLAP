@@ -45,8 +45,8 @@ ES_QUERY = """
         c.id            AS category_id,
         c.name          AS category_name,
         c.icon          AS category_icon
-    FROM product p
-    JOIN category c ON p.category_id = c.id
+    FROM "Product" p
+    JOIN "Category" c ON p.category_id = c.id
 """
 
 
