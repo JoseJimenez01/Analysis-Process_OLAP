@@ -73,3 +73,13 @@ test-results/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+#DAG
+*staging/
+*dim_category/
+*dim_product/
+*dim_restaurant/
+*dim_status/
+*dim_user/
+*fact_menu_composition/
+*fact_reservation/
