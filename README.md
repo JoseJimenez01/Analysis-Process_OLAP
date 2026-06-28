@@ -1,6 +1,6 @@
 # PY01 Restaurantes — Microservicios con Persistencia Políglota
 
-**Repo**: https://github.com/xHellish/proy1-bd2-restaurantes
+**Repo**: https://github.com/JoseJimenez01/Analysis-Process_OLAP#
 **Swagger UI**: http://localhost/api/docs (después de desplegar)
 
 > Sistema de restaurantes con arquitectura de microservicios, persistencia políglota (PostgreSQL ↔ MongoDB), MongoDB Sharded Cluster, Elasticsearch, Redis y escalabilidad horizontal con Kubernetes.
@@ -38,7 +38,7 @@
 ### 2.1 — Clonar y levantar
 
 ```bash
-git clone https://github.com/xHellish/proy1-bd2-restaurantes
+git clone https://github.com/JoseJimenez01/Analysis-Process_OLAP.git
 cd proy1-bd2-restaurantes
 docker compose up --build -d
 ```
