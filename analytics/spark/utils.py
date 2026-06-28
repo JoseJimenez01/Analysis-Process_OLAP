@@ -31,7 +31,7 @@ REPORTS_PATH = f"{ANALYTICS_ROOT}/reports"
 # Se esperan en variables de entorno o se usan defaults para el entorno Docker
 JDBC_URL = os.environ.get(
     "ETL_JDBC_URL",
-    "jdbc:postgresql://postgres:5432/restaurantes"
+    "jdbc:postgresql://postgres:5432/airflow"
 )
 JDBC_USER = os.environ.get("ETL_JDBC_USER", "postgres")
 JDBC_PASSWORD = os.environ.get("ETL_JDBC_PASSWORD", "postgres")

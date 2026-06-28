@@ -36,7 +36,7 @@ HIVE_DB_NAME = "Hive (Data Warehouse)"
 HIVE_URI = "hive://hive@hive-server:10000/default?auth=NOSASL"
 
 PG_DB_NAME = "PostgreSQL (Transaccional)"
-PG_URI = "postgresql://postgres:postgres@postgres:5432/restaurantes"
+PG_URI = "postgresql://postgres:postgres@postgres:5432/airflow"
 
 REPORTS_DIR = "/opt/airflow/reports"
 

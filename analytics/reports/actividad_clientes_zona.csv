@@ -1,31 +1,31 @@
 restaurante,direccion,total_reservas,clientes_unicos,avg_comensales,tasa_completados_pct
-Los Moderno,"Boulevard La Castellana 41-20 Zona 14, Cobán",84,50,6.0,29.8
-Fonda del Chef,"3 Calle 18-10 Zona 5, Totonicapán",84,50,6.5,27.4
-Sabores del Pueblo,"25 Calle 85-75 Zona 12, Ciudad de Guatemala",84,50,7.0,45.2
-La Mesa Colonial,"27 Avenida 93-73 Zona 3, Mixco",84,50,6.6,31.0
-La Mesa del Lago,"Avenida La Paz 12-31 Zona 14, Villa Nueva",84,50,6.3,32.1
-San Dorado,"17 Avenida 52-1 Zona 16, Quetzaltenango",84,50,5.8,31.0
-San Rústico,"Boulevard La Paz 90-14 Zona 19, Totonicapán",84,50,6.1,34.5
-Taberna de la Luna,"Boulevard Reforma 45-23 Zona 1, Santa Catarina Pinula",84,50,6.6,27.4
-La Mesa Nuevo,"Avenida Guatemala Indígena 81-71 Zona 12, Villa Nueva",84,50,7.1,33.3
-Los del Valle,"9 Avenida 6-77 Zona 14, Escuintla",84,50,5.9,32.1
-Fonda Maya,"Boulevard De León 2-18 Zona 20, Salamá",83,50,6.3,38.6
-Imperial Café,"Boulevard La Castellana 39-43 Zona 2, Cuilapa",83,50,7.1,37.3
-La Casa del Chef,"Avenida La Castellana 10-45 Zona 17, San Miguel Petapa",83,50,6.5,30.1
-La Mesa de Doña María,"Avenida Sierra Nevada 94-36 Zona 10, Chimaltenango",83,50,6.4,28.9
-La Mesa del Bosque,"Avenida Reforma 6-38 Zona 4, Sololá",83,50,6.5,36.1
-Parrilla del Sol,"21 Calle 93-7 Zona 17, Retalhuleu",83,50,6.5,24.1
-Sabores Imperial,"6 Calle 2-58 Zona 9, Zacapa",83,50,6.1,30.1
-San del Pueblo,"Avenida España 22-82 Zona 17, San Miguel Petapa",83,50,6.4,38.6
-Taberna del Volcán,"Boulevard Los Próceres 25-2 Zona 3, San Miguel Petapa",83,50,7.2,32.5
-Cantina Dorado,"Avenida España 78-2 Zona 18, San Marcos",83,50,6.7,54.2
-Taberna Verde,"Boulevard Sierra Nevada 95-68 Zona 16, Sololá",83,50,6.7,30.1
-Cantina Verde,"17 Calle 89-36 Zona 1, Totonicapán",83,50,6.5,33.7
-Chapín Bistro,"23 Avenida 29-24 Zona 3, Jutiapa",83,50,6.6,27.7
-de Doña María Grill,"11 Avenida 63-86 Zona 8, Quetzaltenango",83,50,6.6,28.9
-del Chef Café,"Avenida Reforma 29-55 Zona 9, Jalapa",83,50,6.4,34.9
-del Chef Express,"Boulevard La Paz 30-74 Zona 13, Jutiapa",83,50,6.7,41.0
-del Volcán Bistro,"2 Calle 57-97 Zona 1, Cobán",83,50,6.8,31.3
-Doña Dorado,"5 Calle 47-20 Zona 15, El Progreso",83,50,6.4,32.5
-Don del Camino,"Avenida Los Próceres 51-25 Zona 21, Quetzaltenango",83,50,6.4,26.5
-El Sazón Rústico,"25 Calle 10-19 Zona 24, Chiquimula",83,50,6.3,34.9
+Los del Valle,"Boulevard Las Américas 31-95 Zona 21, San Marcos",84,50,6.8,36.9
+Campestre Bistro,"Avenida Guatemala Indígena 72-98 Zona 13, Santa Elena",84,50,6.1,29.8
+El Rincón Moderno,"Avenida Guatemala Indígena 55-47 Zona 9, Sololá",84,50,6.6,34.5
+Cantina de la Finca,"5 Calle 64-76 Zona 23, Mazatenango",84,50,6.3,32.1
+Imperial Palace,"18 Calle 7-5 Zona 1, San Marcos",84,50,6.9,42.9
+La Casa Artesanal,"Boulevard De León 5-82 Zona 23, Santa Elena",84,50,7.6,34.5
+San Campestre,"28 Avenida 81-63 Zona 12, Santa Elena",84,50,6.1,34.5
+Cantina Maya,"13 Avenida 78-69 Zona 12, Totonicapán",84,50,6.8,28.6
+Cantina Verde,"Boulevard Guatemala Indígena 49-8 Zona 23, Santa Elena",84,50,6.1,36.9
+Asados Artesanal,"28 Avenida 78-29 Zona 7, Antigua Guatemala",84,50,6.1,38.1
+Fonda del Bosque,"Boulevard Los Próceres 52-44 Zona 23, Quetzaltenango",83,50,6.3,41.0
+La Casa Moderno,"20 Avenida 32-76 Zona 9, Escuintla",83,50,6.2,32.5
+La Mesa de la Finca,"9 Calle 65-87 Zona 24, Villa Nueva",83,50,7.0,33.7
+Maya Express,"Boulevard España 35-46 Zona 24, Jalapa",83,50,6.0,42.2
+Parrilla Artesanal,"4 Calle 56-54 Zona 11, Jutiapa",83,50,5.8,22.9
+Parrilla Imperial,"24 Calle 78-77 Zona 5, Huehuetenango",83,50,6.5,28.9
+Rústico Bistro,"9 Avenida 27-44 Zona 12, Retalhuleu",83,50,6.6,32.5
+Sabores Rústico,"Avenida Sierra Nevada 91-3 Zona 2, Jalapa",83,50,5.9,31.3
+San del Camino,"6 Avenida 21-71 Zona 10, San Marcos",83,50,6.3,24.1
+Taberna del Pueblo,"Avenida Ciprés 91-71 Zona 2, San Marcos",83,50,6.4,39.8
+Verde Express,"2 Calle 94-66 Zona 4, Retalhuleu",83,50,6.2,36.1
+Colonial Palace,"Boulevard La Castellana 17-67 Zona 10, Retalhuleu",83,50,6.3,30.1
+de la Abuela Palace,"Avenida De León 2-51 Zona 4, Sololá",83,50,6.6,30.1
+de la Finca Bistro,"16 Calle 72-5 Zona 17, Villa Nueva",83,50,6.0,28.9
+de la Plaza Grill,"20 Avenida 59-7 Zona 14, Huehuetenango",83,50,6.3,32.5
+del Bosque Palace,"Boulevard Reforma 42-56 Zona 15, Zacapa",83,50,5.9,27.7
+del Mercado Café,"18 Calle 35-46 Zona 22, Quetzaltenango",83,50,6.7,28.9
+del Pueblo Café,"Avenida Guatemala Indígena 91-89 Zona 1, Mazatenango",83,50,6.9,30.1
+del Valle Express,"16 Calle 82-65 Zona 10, Chimaltenango",83,50,6.4,36.1
+Don Tradicional,"Boulevard La Castellana 96-43 Zona 23, Quetzaltenango",83,50,7.0,25.3

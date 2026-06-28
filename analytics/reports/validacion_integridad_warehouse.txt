@@ -1,6 +1,6 @@
 ========================================
   Validación de Integridad — Warehouse
-  Generado: 2026-06-28T07:16:37.184159+00:00
+  Generado: 2026-06-28T09:05:46.184706+00:00
 ========================================
 
     ✓ dim_user: 1500 filas — registradas: 1500
@@ -10,7 +10,7 @@
     ✓ dim_status: 4 filas — registradas: 4
     ✗ dim_date: no accesible — [PATH_NOT_FOUND] Path does not exist: file:/warehouse/dim_date.
     ✓ fact_reservation: 2500 filas — registradas: 2500
-    ✓ fact_menu_composition: 1112 filas — registradas: 1112
+    ✓ fact_menu_composition: 1152 filas — registradas: 1152
     ✓   fact_reservation.reservation_id: 0 nulos — 0/2500 filas con nulo
     ✗ fact_reservation: error de acceso — [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `date_id` cannot be resolved. Did you mean one of the following? [`user_id`, `status`, `party_size`, `user_email`, `user_name`].;
 'Filter isnull('date_id)

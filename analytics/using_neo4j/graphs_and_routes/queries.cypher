@@ -58,18 +58,15 @@ ORDER BY depth DESC;
 // (a) Shortest route by distance (km) — Hub Central → Casa Luis
 //
 MATCH (start:Location {id: 'l1'}), (end:Location {id: 'l10'})
-CALL gds.shortestPath.dijkstra.stream('road-graph', {
-  sourceNode: start,
-  targetNode: end,
-  relationshipWeightProperty: 'distance_km'
-})
-YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path
-RETURN totalCost AS distance_km,
-       [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS route
-ORDER BY index;
+MATCH path = shortestPath((start)-[:ROAD_TO*]-(end))
+WITH path,
+     reduce(total = 0, r IN relationships(path) | total + r.distance_km) AS distance_km
+RETURN distance_km,
+       [n IN nodes(path) | n.name] AS route
+ORDER BY distance_km
+LIMIT 1;
 
 // (b) Shortest route by time (min) — Zona 10 Burger → Casa Valentina
-//     Fallback: Cypher-native shortestPath with REDUCE for cost
 //
 MATCH path = shortestPath(
   (start:Location {id: 'l3'})-[:ROAD_TO*]->(end:Location {id: 'l11'})
@@ -98,8 +95,10 @@ LIMIT 3;
 //
 MATCH (hub:Location {type: 'hub'})
 MATCH (rest_loc:Location {type: 'restaurant'})
-WHERE point({latitude: hub.lat, longitude: hub.lng}) <-> 
-      point({latitude: rest_loc.lat, longitude: rest_loc.lng}) < 5
+WHERE distance(
+  point({latitude: hub.lat, longitude: hub.lng}),
+  point({latitude: rest_loc.lat, longitude: rest_loc.lng})
+) < 5000
 RETURN hub.name      AS hub,
        rest_loc.name AS restaurant_location,
        round(distance(
@@ -108,12 +107,4 @@ RETURN hub.name      AS hub,
        ) / 1000, 2) AS distance_km
 ORDER BY distance_km;
 
-// (e) [GDS prerequisite] Create the in-memory graph for Dijkstra
-//     Run once before Q3(a):
-//
-// CALL gds.graph.project(
-//   'road-graph',
-//   'Location',
-//   'ROAD_TO',
-//   { relationshipProperties: ['distance_km', 'time_min'] }
-// );
+

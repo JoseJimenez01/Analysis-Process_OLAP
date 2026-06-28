@@ -108,7 +108,7 @@ def main():
 
     # ─── PostgreSQL (base transaccional) ──────────────────────────────
     # Contiene reservas, usuarios, restaurantes, productos, categorías
-    pg_uri = "postgresql://postgres:postgres@postgres:5432/restaurantes"
+    pg_uri = "postgresql://postgres:postgres@postgres:5432/airflow"
     _add_database(token, csrf, "PostgreSQL (Transaccional)", pg_uri)
 
     # ─── Hive (Data Warehouse) — opcional, solo si está disponible ────

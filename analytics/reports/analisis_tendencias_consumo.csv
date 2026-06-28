@@ -1,86 +1,86 @@
 seccion,status,total,pct
-distribucion_estados,confirmed,842,33.68
-distribucion_estados,completed,830,33.20
-distribucion_estados,pending,425,17.00
-distribucion_estados,cancelled,403,16.12
+distribucion_estados,completed,820,32.80
+distribucion_estados,confirmed,805,32.20
+distribucion_estados,pending,438,17.52
+distribucion_estados,cancelled,437,17.48
 
 seccion,restaurant_name,avg_party_size,total_reservations
-avg_party_rest,Sabores del Pueblo,7.0,84
-avg_party_rest,La Mesa Colonial,6.6,84
-avg_party_rest,San Rústico,6.1,84
-avg_party_rest,Fonda del Chef,6.5,84
-avg_party_rest,San Dorado,5.8,84
-avg_party_rest,Taberna de la Luna,6.6,84
-avg_party_rest,La Mesa Nuevo,7.1,84
-avg_party_rest,Los Moderno,6.0,84
-avg_party_rest,Los del Valle,5.9,84
-avg_party_rest,La Mesa del Lago,6.3,84
-avg_party_rest,El Sazón Rústico,6.3,83
-avg_party_rest,La Mesa del Bosque,6.5,83
-avg_party_rest,Taberna Verde,6.7,83
-avg_party_rest,de Doña María Grill,6.6,83
-avg_party_rest,Taberna del Volcán,7.2,83
-avg_party_rest,Cantina Verde,6.5,83
-avg_party_rest,Fonda Maya,6.3,83
-avg_party_rest,San del Pueblo,6.4,83
-avg_party_rest,La Mesa de Doña María,6.4,83
-avg_party_rest,del Chef Express,6.7,83
-avg_party_rest,Imperial Café,7.1,83
-avg_party_rest,Cantina Dorado,6.7,83
-avg_party_rest,Sabores Imperial,6.1,83
-avg_party_rest,Parrilla del Sol,6.5,83
-avg_party_rest,Chapín Bistro,6.6,83
-avg_party_rest,Doña Dorado,6.4,83
-avg_party_rest,La Casa del Chef,6.5,83
-avg_party_rest,del Volcán Bistro,6.8,83
-avg_party_rest,del Chef Café,6.4,83
-avg_party_rest,Don del Camino,6.4,83
+avg_party_rest,Campestre Bistro,6.1,84
+avg_party_rest,San Campestre,6.1,84
+avg_party_rest,Cantina Verde,6.1,84
+avg_party_rest,La Casa Artesanal,7.6,84
+avg_party_rest,Imperial Palace,6.9,84
+avg_party_rest,Cantina de la Finca,6.3,84
+avg_party_rest,Asados Artesanal,6.1,84
+avg_party_rest,Cantina Maya,6.8,84
+avg_party_rest,El Rincón Moderno,6.6,84
+avg_party_rest,Los del Valle,6.8,84
+avg_party_rest,de la Finca Bistro,6.0,83
+avg_party_rest,de la Plaza Grill,6.3,83
+avg_party_rest,de la Abuela Palace,6.6,83
+avg_party_rest,La Mesa de la Finca,7.0,83
+avg_party_rest,del Mercado Café,6.7,83
+avg_party_rest,Sabores Rústico,5.9,83
+avg_party_rest,del Bosque Palace,5.9,83
+avg_party_rest,Fonda del Bosque,6.3,83
+avg_party_rest,Maya Express,6.0,83
+avg_party_rest,San del Camino,6.3,83
+avg_party_rest,Colonial Palace,6.3,83
+avg_party_rest,La Casa Moderno,6.2,83
+avg_party_rest,Don Tradicional,7.0,83
+avg_party_rest,Rústico Bistro,6.6,83
+avg_party_rest,del Valle Express,6.4,83
+avg_party_rest,Taberna del Pueblo,6.4,83
+avg_party_rest,del Pueblo Café,6.9,83
+avg_party_rest,Parrilla Imperial,6.5,83
+avg_party_rest,Verde Express,6.2,83
+avg_party_rest,Parrilla Artesanal,5.8,83
 
 seccion,category_name,total_menus,total_occurrences,avg_price
-cat_ofertadas,Mariscos,111,111,118.60
-cat_ofertadas,Postres,111,111,115.15
-cat_ofertadas,Entradas,111,111,114.92
-cat_ofertadas,Platos Fuertes,111,111,114.86
-cat_ofertadas,Pastas,111,111,114.21
-cat_ofertadas,Bebidas,103,103,104.67
-cat_ofertadas,Pizzas,93,93,132.12
-cat_ofertadas,Ensaladas,82,82,112.93
-cat_ofertadas,Tapas,73,73,127.84
-cat_ofertadas,Desayunos,64,64,130.92
-cat_ofertadas,Sopas,49,49,114.22
-cat_ofertadas,Sándwiches,41,41,120.45
-cat_ofertadas,Carnes,27,27,126.70
-cat_ofertadas,Vegetariano,17,17,121.21
-cat_ofertadas,Coctelería,8,8,124.83
+cat_ofertadas,Mariscos,116,116,127.82
+cat_ofertadas,Postres,116,116,114.22
+cat_ofertadas,Entradas,116,116,113.25
+cat_ofertadas,Platos Fuertes,116,116,115.38
+cat_ofertadas,Pastas,116,116,129.95
+cat_ofertadas,Bebidas,105,105,125.17
+cat_ofertadas,Pizzas,94,94,121.71
+cat_ofertadas,Ensaladas,84,84,108.95
+cat_ofertadas,Tapas,74,74,93.84
+cat_ofertadas,Desayunos,66,66,131.04
+cat_ofertadas,Sopas,52,52,139.51
+cat_ofertadas,Sándwiches,44,44,115.06
+cat_ofertadas,Carnes,30,30,130.68
+cat_ofertadas,Vegetariano,15,15,106.39
+cat_ofertadas,Coctelería,8,8,85.64
 
 seccion,restaurant_name,total_reservations,avg_party,completion_rate_pct
-ranking_rest,Sabores del Pueblo,84,7.0,45.2
-ranking_rest,La Mesa Colonial,84,6.6,31.0
-ranking_rest,San Rústico,84,6.1,34.5
-ranking_rest,Fonda del Chef,84,6.5,27.4
-ranking_rest,San Dorado,84,5.8,31.0
-ranking_rest,Taberna de la Luna,84,6.6,27.4
-ranking_rest,La Mesa Nuevo,84,7.1,33.3
-ranking_rest,Los Moderno,84,6.0,29.8
-ranking_rest,Los del Valle,84,5.9,32.1
-ranking_rest,La Mesa del Lago,84,6.3,32.1
-ranking_rest,El Sazón Rústico,83,6.3,34.9
-ranking_rest,La Mesa del Bosque,83,6.5,36.1
-ranking_rest,Taberna Verde,83,6.7,30.1
-ranking_rest,de Doña María Grill,83,6.6,28.9
-ranking_rest,Taberna del Volcán,83,7.2,32.5
-ranking_rest,Cantina Verde,83,6.5,33.7
-ranking_rest,Fonda Maya,83,6.3,38.6
-ranking_rest,San del Pueblo,83,6.4,38.6
-ranking_rest,La Mesa de Doña María,83,6.4,28.9
-ranking_rest,del Chef Express,83,6.7,41.0
-ranking_rest,Imperial Café,83,7.1,37.3
-ranking_rest,Cantina Dorado,83,6.7,54.2
-ranking_rest,Sabores Imperial,83,6.1,30.1
-ranking_rest,Parrilla del Sol,83,6.5,24.1
-ranking_rest,Chapín Bistro,83,6.6,27.7
-ranking_rest,Doña Dorado,83,6.4,32.5
-ranking_rest,La Casa del Chef,83,6.5,30.1
-ranking_rest,del Volcán Bistro,83,6.8,31.3
-ranking_rest,del Chef Café,83,6.4,34.9
-ranking_rest,Don del Camino,83,6.4,26.5
+ranking_rest,Campestre Bistro,84,6.1,29.8
+ranking_rest,San Campestre,84,6.1,34.5
+ranking_rest,Cantina Verde,84,6.1,36.9
+ranking_rest,La Casa Artesanal,84,7.6,34.5
+ranking_rest,Imperial Palace,84,6.9,42.9
+ranking_rest,Cantina de la Finca,84,6.3,32.1
+ranking_rest,Asados Artesanal,84,6.1,38.1
+ranking_rest,Cantina Maya,84,6.8,28.6
+ranking_rest,El Rincón Moderno,84,6.6,34.5
+ranking_rest,Los del Valle,84,6.8,36.9
+ranking_rest,de la Finca Bistro,83,6.0,28.9
+ranking_rest,de la Plaza Grill,83,6.3,32.5
+ranking_rest,de la Abuela Palace,83,6.6,30.1
+ranking_rest,La Mesa de la Finca,83,7.0,33.7
+ranking_rest,del Mercado Café,83,6.7,28.9
+ranking_rest,Sabores Rústico,83,5.9,31.3
+ranking_rest,del Bosque Palace,83,5.9,27.7
+ranking_rest,Fonda del Bosque,83,6.3,41.0
+ranking_rest,Maya Express,83,6.0,42.2
+ranking_rest,San del Camino,83,6.3,24.1
+ranking_rest,Colonial Palace,83,6.3,30.1
+ranking_rest,La Casa Moderno,83,6.2,32.5
+ranking_rest,Don Tradicional,83,7.0,25.3
+ranking_rest,Rústico Bistro,83,6.6,32.5
+ranking_rest,del Valle Express,83,6.4,36.1
+ranking_rest,Taberna del Pueblo,83,6.4,39.8
+ranking_rest,del Pueblo Café,83,6.9,30.1
+ranking_rest,Parrilla Imperial,83,6.5,28.9
+ranking_rest,Verde Express,83,6.2,36.1
+ranking_rest,Parrilla Artesanal,83,5.8,22.9

@@ -40,12 +40,10 @@ WITH c, hub, collect({o: o, u: u, dest: dest, hdist: hub_dist, htime: hub_time})
 UNWIND range(0, size(stops)-1) AS i
 WITH c, stops, i,
      stops[i]    AS s,
-     stops[i].hdist AS cumul_dist,
-     stops[i].htime AS cumul_time,
-     CASE WHEN i = 0 THEN hub ELSE stops[i-1].dest END AS prev
+     CASE WHEN i = 0 THEN hub ELSE stops[i-1].dest END AS prev,
+     stops[i].dest AS curr_dest
 
-// Camino más corto entre parada anterior y actual
-MATCH leg = shortestPath((prev)-[:ROAD_TO*]-(s.dest))
+MATCH leg = shortestPath((prev)-[:ROAD_TO*]-(curr_dest))
 WITH c, s, i,
      reduce(d = 0, r IN relationships(leg) | d + r.distance_km) AS leg_km,
      reduce(t = 0, r IN relationships(leg) | t + r.time_min)    AS leg_min,
@@ -82,9 +80,10 @@ WITH c, hub, collect({o: o, u: u, dest: dest, hdist: hub_dist, htime: hub_time})
 UNWIND range(0, size(stops)-1) AS i
 WITH c, stops, i,
      stops[i]    AS s,
-     CASE WHEN i = 0 THEN hub ELSE stops[i-1].dest END AS prev
+     CASE WHEN i = 0 THEN hub ELSE stops[i-1].dest END AS prev,
+     stops[i].dest AS curr_dest
 
-MATCH leg = shortestPath((prev)-[:ROAD_TO*]-(s.dest))
+MATCH leg = shortestPath((prev)-[:ROAD_TO*]-(curr_dest))
 WITH c, s, i,
      reduce(d = 0, r IN relationships(leg) | d + r.distance_km) AS leg_km,
      reduce(t = 0, r IN relationships(leg) | t + r.time_min)    AS leg_min,

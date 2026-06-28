@@ -9,7 +9,7 @@ REPORTS_DIR = "/opt/airflow/reports"
 
 PG_HOST = os.environ.get("PG_HOST", "postgres")
 PG_PORT = os.environ.get("PG_PORT", "5432")
-PG_DB = os.environ.get("PG_DB", "restaurantes")
+PG_DB = os.environ.get("PG_DB", "airflow")
 PG_USER = os.environ.get("PG_USER", "postgres")
 PG_PASSWORD = os.environ.get("PG_PASSWORD", "postgres")
 
